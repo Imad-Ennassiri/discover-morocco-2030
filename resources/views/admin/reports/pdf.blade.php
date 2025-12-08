@@ -29,13 +29,30 @@
             height: 2.5cm;
             background-color: #FFFFFF;
             color: #8B0000;
-            text-align: right;
             padding-right: 2cm;
-            padding-top: 1cm;
-            font-weight: bold;
-            font-size: 10pt;
+            padding-left: 2cm;
+            padding-top: 0.5cm;
             border-bottom: 3px solid #8B0000;
             z-index: 0;
+        }
+
+        .header-content {
+            display: table;
+            width: 100%;
+        }
+        .header-left {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: left;
+            width: 50%;
+        }
+        .header-right {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            width: 50%;
+            font-weight: bold;
+            font-size: 10pt;
         }
 
         footer {
@@ -68,14 +85,67 @@
         .cover-content {
             margin: 0 auto;
             text-align: center;
-            padding-top: 35%;
+            padding-top: 30%;
             width: 80%;
+        }
+
+        /* Logo Styles */
+        .logo-container {
+            margin-bottom: 30px;
+        }
+        .logo-box {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background-color: #8B0000;
+            color: white;
+            font-size: 50px;
+            font-weight: bold;
+            line-height: 80px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        .logo-text {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #444444;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .logo-text span {
+            color: #8B0000;
+        }
+
+        /* Mini Logo for Header */
+        .mini-logo-box {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #8B0000;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        .mini-logo-text {
+            display: inline-block;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #444444;
+            letter-spacing: 1px;
+            vertical-align: middle;
         }
 
         h1.cover-title {
             color: #8B0000;
-            font-size: 42pt;
-            margin-bottom: 30px;
+            font-size: 38pt;
+            margin-bottom: 20px;
+            margin-top: 30px;
             text-transform: uppercase;
             letter-spacing: 3px;
             border-bottom: none;
@@ -180,7 +250,15 @@
 
     <!-- Header & Footer (Visible on pages 2+) -->
     <header>
-        RAPPORT OFFICIEL – DISCOVER MOROCCO 2030
+        <div class="header-content">
+            <div class="header-left">
+                <div class="mini-logo-box">M</div>
+                <div class="mini-logo-text">MOROCCO<span style="color: #8B0000 !important;">2030</span></div>
+            </div>
+            <div class="header-right">
+                OFFICIAL REPORT
+            </div>
+        </div>
     </header>
 
     <footer>
@@ -202,7 +280,13 @@
     <!-- Cover Page (Masks the header/footer on page 1) -->
     <div class="cover-page">
         <div class="cover-content">
-            <h1 class="cover-title">Rapport Officiel<br>Morocco 2030</h1>
+            <!-- Branding Logo -->
+            <div class="logo-container">
+                <div class="logo-box">M</div>
+                <div class="logo-text">MOROCCO<span>2030</span></div>
+            </div>
+
+            <h1 class="cover-title">Rapport Officiel</h1>
             <div class="accent-line-center"></div>
             <div class="cover-subtitle">Platform Performance & Strategic Insights</div>
             <div class="cover-date">{{ $date }}</div>
