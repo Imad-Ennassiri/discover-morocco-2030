@@ -54,6 +54,10 @@ class CityController extends Controller
         $cities = $query->paginate(10)->withQueryString();
         $available_categories = ['touristique', 'côtière', 'montagneuse', 'historique', 'culturelle', 'désertique'];
 
+        if ($request->ajax()) {
+            return view('admin.cities.partials.table', compact('cities'))->render();
+        }
+
         return view('admin.cities.index', compact('cities', 'available_categories'));
     }
 

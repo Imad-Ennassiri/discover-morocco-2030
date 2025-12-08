@@ -48,6 +48,10 @@ class ContactController extends Controller
 
         $contacts = $query->paginate(10)->withQueryString();
 
+        if ($request->ajax()) {
+            return view('admin.contacts.partials.table', compact('contacts'))->render();
+        }
+
         return view('admin.contacts.index', compact('contacts'));
     }
 

@@ -44,6 +44,11 @@ class CommentaireController extends Controller
         }
 
         $commentaires = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return view('admin.commentaires.partials.table', compact('commentaires'))->render();
+        }
+
         return view('admin.commentaires.index', compact('commentaires'));
     }
 

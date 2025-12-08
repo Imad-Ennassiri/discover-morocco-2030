@@ -39,6 +39,10 @@ class NewsletterController extends Controller
 
         $newsletters = $query->paginate(10)->withQueryString();
 
+        if ($request->ajax()) {
+            return view('admin.newsletters.partials.table', compact('newsletters'))->render();
+        }
+
         return view('admin.newsletters.index', compact('newsletters'));
     }
 

@@ -1,0 +1,73 @@
+<div class="overflow-x-auto">
+    <table class="w-full whitespace-nowrap">
+        <thead>
+            <tr class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                <th class="px-8 py-5 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-left">Destination</th>
+                <th class="px-8 py-5 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-left">City</th>
+                <th class="px-8 py-5 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-left">Title</th>
+                <th class="px-8 py-5 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-left">Content Preview</th>
+                <th class="px-8 py-5 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+            @forelse($paragraphs as $paragraph)
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+                <td class="px-8 py-5">
+                    <div class="font-bold text-gray-900 dark:text-white">{{ $paragraph->destination->nom }}</div>
+                </td>
+                <td class="px-8 py-5">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                        {{ $paragraph->destination->city->nom }}
+                    </span>
+                </td>
+                <td class="px-8 py-5">
+                    <div class="text-gray-900 dark:text-white">{{ $paragraph->titre ?? 'No title' }}</div>
+                </td>
+                <td class="px-8 py-5">
+                    <div class="text-gray-600 dark:text-gray-400 max-w-md truncate">{{ Str::limit($paragraph->contenu, 100) }}</div>
+                </td>
+                <td class="px-8 py-5 text-right text-sm font-medium">
+                    <div class="flex items-center justify-end space-x-3">
+                        <a href="{{ route('admin.destination-paragraphs.edit', $paragraph) }}" class="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl transition-colors" title="Edit">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </a>
+                        <form id="delete-form-{{ $paragraph->id }}" action="{{ route('admin.destination-paragraphs.destroy', $paragraph) }}" method="POST" class="inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" onclick="confirmDelete('delete-form-{{ $paragraph->id }}')" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors" title="Delete">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" class="px-8 py-16 text-center text-gray-500 dark:text-gray-400">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="h-20 w-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                            <svg class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">No content found</h3>
+                        <p class="text-sm mt-1 mb-6">{{ request('search') ? 'Try adjusting your search.' : 'Get started by adding content for a destination.' }}</p>
+                         @if(!request('search'))
+                        <a href="{{ route('admin.destination-paragraphs.create') }}" class="btn-primary">
+                            Add Content
+                        </a>
+                         @endif
+                    </div>
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+<div class="px-8 py-5 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
+    {{ $paragraphs->links() }}
+</div>

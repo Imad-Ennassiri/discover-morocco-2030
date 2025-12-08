@@ -9,9 +9,47 @@ use Illuminate\Http\Request;
 
 class CityParagraphController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $paragraphs = CityParagraph::with('city')->latest()->paginate(20);
+        $query = CityParagraph::with('city');
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('titre', 'like', "%{$search}%")
+                  ->orWhere('contenu', 'like', "%{$search}%")
+                  ->orWhereHas('city', function($q) use ($search) {
+                      $q->where('nom', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Sorting
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'oldest':
+                    $query->oldest();
+                    break;
+                case 'title_asc':
+                    $query->orderBy('titre', 'asc');
+                    break;
+                case 'title_desc':
+                    $query->orderBy('titre', 'desc');
+                    break;
+                default:
+                    $query->latest();
+                    break;
+            }
+        } else {
+            $query->latest();
+        }
+
+        $paragraphs = $query->paginate(20)->withQueryString();
+
+        if ($request->ajax()) {
+            return view('admin.city-paragraphs.partials.table', compact('paragraphs'))->render();
+        }
+
         return view('admin.city-paragraphs.index', compact('paragraphs'));
     }
 

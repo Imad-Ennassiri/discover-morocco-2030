@@ -50,6 +50,10 @@ class VolontaireController extends Controller
         // Show all volunteers or use a very high pagination limit
         $volontaires = $query->paginate(1000)->withQueryString();
 
+        if ($request->ajax()) {
+            return view('admin.volontaires.partials.table', compact('volontaires'))->render();
+        }
+
         return view('admin.volontaires.index', compact('volontaires'));
     }
 

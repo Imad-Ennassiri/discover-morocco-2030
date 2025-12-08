@@ -61,6 +61,10 @@ class DestinationController extends Controller
         $cities = City::orderBy('nom')->get();
         $available_categories = ['touristique', 'côtière', 'montagneuse', 'historique', 'culturelle', 'désertique'];
 
+        if ($request->ajax()) {
+            return view('admin.destinations.partials.table', compact('destinations'))->render();
+        }
+
         return view('admin.destinations.index', compact('destinations', 'cities', 'available_categories'));
     }
 

@@ -48,6 +48,10 @@ class MediaController extends Controller
             return $q->where('city_id', $request->city_id);
         })->orderBy('nom')->get();
 
+        if ($request->ajax()) {
+            return view('admin.media.partials.gallery', compact('cityImages', 'cityVideos', 'destinationImages', 'destinationVideos', 'cities', 'destinations'))->render();
+        }
+
         return view('admin.media.index', compact('cityImages', 'cityVideos', 'destinationImages', 'destinationVideos', 'cities', 'destinations'));
     }
 
