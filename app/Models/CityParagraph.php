@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class CityParagraph extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['city_id', 'titre', 'contenu'];
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 }

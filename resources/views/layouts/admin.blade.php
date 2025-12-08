@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-gray-50 dark:bg-black">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Morocco 2030 Admin') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        },
+                        gray: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'scale-in': 'scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        /* Custom Thin Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 2px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #374151;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+        
+        /* Firefox thin scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db transparent;
+        }
+        .dark * {
+            scrollbar-color: #374151 transparent;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass {
+            background: rgba(17, 24, 39, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-card {
+            background: white;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dark .glass-card {
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Premium Inputs */
+        .form-input-wrapper {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        input[type="text"], 
+        input[type="email"], 
+        input[type="number"], 
+        input[type="password"], 
+        textarea, 
+        select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 1rem;
+            border: 1px solid #e5e7eb;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            color: #1f2937;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        select {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e") !important;
+            background-position: right 1rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 1.25em 1.25em !important;
+            padding-right: 2.5rem !important;
+        }
+        .dark input, .dark textarea, .dark select {
+            background-color: #1f2937;
+            border-color: #374151;
+            color: #f3f4f6;
+            box-shadow: none;
+        }
+        .dark select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e") !important;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #b91c1c;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(185, 28, 28, 0.1);
+            outline: none;
+        }
+
+        /* Fix for icons overlapping text */
+        .has-icon {
+            padding-left: 3rem !important;
+        }
+        .dark input:focus, .dark textarea:focus, .dark select:focus {
+            background-color: #111827;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+        }
+
+        /* Custom Checkbox as Tags */
+        .checkbox-tag input:checked + div {
+            background-color: #fef2f2;
+            border-color: #b91c1c;
+            color: #991b1b;
+        }
+        .dark .checkbox-tag input:checked + div {
+            background-color: rgba(185, 28, 28, 0.1);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+        .checkbox-tag div {
+            transition: all 0.2s ease;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.25);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(185, 28, 28, 0.35);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Print Styles for Report */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .glass-card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+            .print-only { display: block !important; }
+            /* Hide Sidebar and Header */
+            nav, header, .sidebar { display: none !important; }
+            main { margin: 0 !important; padding: 0 !important; }
+            /* Expand content */
+            .max-w-7xl { max-width: none !important; }
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-black selection:bg-primary-500 selection:text-white" x-data="{ sidebarOpen: false, darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode }">
+    
+    <!-- Notifications Toast -->
+    @if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            Toast.fire({
+                icon: 'success',
+                title: '{{ session('success') }}',
+                background: localStorage.getItem('darkMode') === 'true' ? '#111827' : '#fff',
+                color: localStorage.getItem('darkMode') === 'true' ? '#fff' : '#000'
+            })
+        });
+    </script>
+    @endif
+
+    <div class="h-screen flex overflow-hidden">
+        
+        <!-- Mobile Sidebar Backdrop -->
+        <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black/80 z-40 lg:hidden glass no-print" @click="sidebarOpen = false"></div>
+
+        <!-- Sidebar -->
+        <div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="sidebar fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 ease-in-out lg:translate-x-0 no-print flex flex-col">
+            <div class="flex items-center justify-center h-24 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary-500/30">
+                        M
+                    </div>
+                    <h1 class="text-xl font-display font-bold text-gray-900 dark:text-white tracking-wide">
+                        MOROCCO<span class="text-primary-600">2030</span>
+                    </h1>
+                </div>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5" style="scrollbar-width: thin;">
+                <a href="{{ route('admin.dashboard') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.dashboard') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    Dashboard
+                </a>
+
+                <div class="pt-6 pb-3">
+                    <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Content</p>
+                </div>
+
+                <a href="{{ route('admin.cities.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.cities.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.cities.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Cities
+                </a>
+
+                <a href="{{ route('admin.destinations.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.destinations.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.destinations.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Destinations
+                </a>
+
+                <a href="{{ route('admin.media.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.media.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.media.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Media Manager
+                </a>
+
+                <div class="pt-6 pb-3">
+                    <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Content</p>
+                </div>
+
+                <a href="{{ route('admin.city-paragraphs.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.city-paragraphs.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.city-paragraphs.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    City Content
+                </a>
+
+                <a href="{{ route('admin.destination-paragraphs.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.destination-paragraphs.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.destination-paragraphs.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Destination Content
+                </a>
+
+                <div class="pt-6 pb-3">
+                    <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Community</p>
+                </div>
+
+                <a href="{{ route('admin.volontaires.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.volontaires.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.volontaires.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    Volunteers
+                </a>
+
+                <a href="{{ route('admin.commentaires.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.commentaires.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.commentaires.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                    Comments
+                </a>
+
+                <div class="pt-6 pb-3">
+                    <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Inbox</p>
+                </div>
+
+                <a href="{{ route('admin.contacts.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.contacts.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.contacts.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Contacts
+                </a>
+                
+                <a href="{{ route('admin.newsletters.index') }}" class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 {{ request()->routeIs('admin.newsletters.*') ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 shadow-sm ring-1 ring-primary-200 dark:ring-primary-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.newsletters.*') ? 'text-primary-600 dark:text-primary-500' : 'text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Newsletter
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col overflow-hidden lg:ml-72">
+            <!-- Fixed Header -->
+            <header class="fixed top-0 right-0 left-0 lg:left-72 z-30 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 md:px-8 h-24 flex items-center justify-between no-print">
+                <div class="flex items-center">
+                    <button @click="sidebarOpen = true" class="lg:hidden text-gray-500 hover:text-gray-700 focus:outline-none mr-4">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Breadcrumbs -->
+                    <div class="hidden md:flex items-center text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <span class="hover:text-gray-900 dark:hover:text-white transition-colors cursor-default">Admin</span>
+                        <svg class="h-4 w-4 mx-2 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                        <span class="text-gray-900 dark:text-white">{{ ucfirst(request()->segment(2) ?? 'Dashboard') }}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications (Activity Feed) -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="p-2.5 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors relative focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            @if(isset($global_recent_activities) && $global_recent_activities->count() > 0)
+                            <span class="absolute top-2.5 right-2.5 h-2.5 w-2.5 bg-primary-500 rounded-full border-2 border-white dark:border-black animate-pulse"></span>
+                            @endif
+                        </button>
+                        
+                        <!-- Dropdown -->
+                        <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 z-50 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                                <h3 class="text-sm font-bold text-gray-900 dark:text-white">Recent Activity</h3>
+                            </div>
+                            <div class="max-h-64 overflow-y-auto">
+                                @if(isset($global_recent_activities))
+                                    @forelse($global_recent_activities as $activity)
+                                    <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-b border-gray-50 dark:border-gray-800 last:border-0 flex items-start gap-3">
+                                        <div class="mt-1.5 flex-shrink-0">
+                                            @if($activity->action == 'created')
+                                                <div class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                                            @elseif($activity->action == 'updated')
+                                                <div class="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                                            @elseif($activity->action == 'deleted')
+                                                <div class="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+                                            @else
+                                                <div class="h-2 w-2 rounded-full bg-gray-500"></div>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 leading-snug">{{ $activity->description }}</p>
+                                            <span class="text-xs text-gray-400 mt-1 block">{{ $activity->created_at->diffForHumans() }}</span>
+                                        </div>
+                                    </div>
+                                    @empty
+                                    <div class="px-4 py-3 text-center text-gray-500">No recent activity</div>
+                                    @endforelse
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="p-2.5 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors focus:outline-none">
+                        <svg x-show="!darkMode" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        <svg x-show="darkMode" x-cloak class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-black p-4 md:p-8 mt-24" style="scrollbar-width: thin;">
+                <div class="max-w-7xl mx-auto animate-fade-in">
+                    @yield('content')
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Global Delete Confirmation Script -->
+    <script>
+        function confirmDelete(formId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it!',
+                background: localStorage.getItem('darkMode') === 'true' ? '#111827' : '#fff',
+                color: localStorage.getItem('darkMode') === 'true' ? '#fff' : '#000',
+                customClass: {
+                    popup: 'rounded-2xl border border-gray-200 dark:border-gray-800',
+                    confirmButton: 'rounded-xl px-4 py-2',
+                    cancelButton: 'rounded-xl px-4 py-2'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            })
+            return false;
+        }
+    </script>
+</body>
+</html>
