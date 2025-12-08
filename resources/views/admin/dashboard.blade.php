@@ -291,13 +291,109 @@
     <!-- Screen View (Dashboard) -->
     <div class="screen-only">
         <!-- Stats Grid -->
+        <!-- Stats Grid (Redesigned) -->
+        <!-- Stats Grid (Simple & Premium) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
-            @foreach($stats as $key => $value)
-            <div class="glass-card rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300">
-                <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{{ ucfirst($key) }}</p>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white counter-number" data-target="{{ $value }}">0</h3>
+            <!-- Cities -->
+            <a href="{{ route('admin.cities.index') }}" class="glass-card relative overflow-hidden rounded-2xl p-6 group block">
+                <div class="card-icon-bg text-gray-900 dark:text-white">
+                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M19 2H5C3.89543 2 3 2.89543 3 4V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V4C21 2.89543 20.1046 2 19 2ZM11 20H5V4H11V20ZM19 20H13V4H19V20Z"></path></svg>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Cities</p>
+                    <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white counter-number" data-target="{{ $stats['cities'] }}">0</h3>
+                </div>
+            </a>
+
+            <!-- Destinations -->
+            <a href="{{ route('admin.destinations.index') }}" class="glass-card relative overflow-hidden rounded-2xl p-6 group block">
+                <div class="card-icon-bg text-gray-900 dark:text-white">
+                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Destinations</p>
+                    <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white counter-number" data-target="{{ $stats['destinations'] }}">0</h3>
+                </div>
+            </a>
+
+            <!-- Volunteers -->
+            <a href="{{ route('admin.volontaires.index') }}" class="glass-card relative overflow-hidden rounded-2xl p-6 group block">
+                <div class="card-icon-bg text-gray-900 dark:text-white">
+                     <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Volunteers</p>
+                    <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white counter-number" data-target="{{ $stats['volontaires'] }}">0</h3>
+                </div>
+            </a>
+
+            <!-- Comments -->
+            <a href="{{ route('admin.commentaires.index') }}" class="glass-card relative overflow-hidden rounded-2xl p-6 group block">
+                <div class="card-icon-bg text-gray-900 dark:text-white">
+                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path></svg>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Comments</p>
+                    <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white counter-number" data-target="{{ $stats['commentaires'] }}">0</h3>
+                </div>
+            </a>
+
+            <!-- Contacts -->
+            <a href="{{ route('admin.contacts.index') }}" class="glass-card relative overflow-hidden rounded-2xl p-6 group block">
+                <div class="card-icon-bg text-gray-900 dark:text-white">
+                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path></svg>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Contacts</p>
+                    <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white counter-number" data-target="{{ $stats['contacts'] }}">0</h3>
+                </div>
+            </a>
+
+            <!-- Newsletters -->
+            <a href="{{ route('admin.newsletters.index') }}" class="glass-card relative overflow-hidden rounded-2xl p-6 group block">
+                <div class="card-icon-bg text-gray-900 dark:text-white">
+                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Subscribers</p>
+                    <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white counter-number" data-target="{{ $stats['newsletters'] }}">0</h3>
+                </div>
+            </a>
+        </div>
+
+        <!-- New Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <!-- Top Cities Chart -->
+            <div class="glass-card rounded-2xl p-6 md:col-span-2">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Top Hosting Cities</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Cities with the most destinations</p>
+                    </div>
+                    <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                    </div>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="topCitiesChart"></canvas>
+                </div>
             </div>
-            @endforeach
+
+            <!-- Contact Status Chart -->
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Inbox Status</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Message response tracking</p>
+                    </div>
+                    <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center" style="height: 300px;">
+                    <canvas id="contactStatusChart"></canvas>
+                </div>
+            </div>
         </div>
 
         <!-- Charts / Visuals -->
@@ -468,39 +564,60 @@
         
         /* Glassmorphism enhanced */
         .glass-card {
-            backdrop-filter: blur(16px) saturate(180%);
-            background-color: rgba(255, 255, 255, 0.75);
-            border: 1px solid rgba(209, 213, 219, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
         .dark .glass-card {
-            background-color: rgba(17, 24, 39, 0.7);
-            border: 1px solid rgba(55, 65, 81, 0.3);
+            background: rgba(17, 24, 39, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(153, 27, 27, 0.1);
+            border-color: rgba(153, 27, 27, 0.2);
+        }
+
+        .dark .glass-card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(220, 38, 38, 0.3);
+            background: rgba(17, 24, 39, 0.8);
         }
         
-        /* Chart visibility improvements for dark mode */
+        /* Chart specific improvements */
         canvas {
-            max-width: 100%;
-            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
-        
         .dark canvas {
-            filter: brightness(1.1) contrast(1.05);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
-        
-        /* Ensure chart containers are visible */
-        #contentPieChart,
-        #engagementBarChart,
-        #activityLineChart {
-            position: relative;
+
+        /* Card Icon decoration */
+        .card-icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            opacity: 0.05;
+            transition: all 0.5s ease;
+            transform: rotate(-10deg) scale(1.5);
         }
-        
-        .dark #contentPieChart,
-        .dark #engagementBarChart,
-        .dark #activityLineChart {
-            background: transparent;
+        .glass-card:hover .card-icon-bg {
+            opacity: 0.1;
+            transform: rotate(0deg) scale(1.8);
+            right: 10px;
+            bottom: 10px;
         }
-        
+        .dark .card-icon-bg {
+            opacity: 0.05;
+            color: white;
+        }
+
         @media print {
             .no-print, .screen-only { display: none !important; }
             .print-only { display: block !important; }
@@ -552,23 +669,75 @@
                 }, index * 150);
             });
             
-            const isDark = localStorage.getItem('darkMode') === 'true';
+            const isDark = document.documentElement.classList.contains('dark') || localStorage.getItem('darkMode') === 'true';
+            
+            // Dynamic colors based on theme
             const textColor = isDark ? '#f3f4f6' : '#374151';
-            const gridColor = isDark ? 'rgba(75, 85, 99, 0.3)' : '#e5e7eb';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
             const axisColor = isDark ? '#9ca3af' : '#6b7280';
+            const tooltipBg = isDark ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+            const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
             
-            // Morocco Colors - adjusted for dark mode visibility
+            // Morocco Colors
             const moroccoRed = '#991b1b';
-            const moroccoRedLight = isDark ? '#dc2626' : '#991b1b';
-            const moroccoGrey = '#6b7280';
-            const moroccoGreyLight = isDark ? '#9ca3af' : '#6b7280';
+            const moroccoRedLight = '#dc2626'; // Brighter red for charts
+            const moroccoGrey = '#4b5563';
+            const moroccoGreyLight = '#9ca3af';
             const moroccoWhite = '#ffffff';
-            const accentBlue = isDark ? '#60a5fa' : '#3b82f6';
-            const accentGreen = isDark ? '#34d399' : '#10b981';
-            const accentYellow = '#f59e0b';
             
-            // Chart fill colors with better opacity for dark mode
-            const fillOpacity = isDark ? '40' : '20';
+            // Chart fill colors
+            const fillOpacity = isDark ? '40' : '20'; // Hex opacity
+            
+            // Common Chart Options
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: textColor,
+                            font: { family: "'Inter', sans-serif", size: 12, weight: 600 },
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: tooltipBg,
+                        titleColor: textColor,
+                        bodyColor: textColor,
+                        borderColor: tooltipBorder,
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                        titleFont: { family: "'Inter', sans-serif", size: 13, weight: 600 },
+                        bodyFont: { family: "'Inter', sans-serif", size: 12 },
+                        displayColors: true,
+                        boxPadding: 4,
+                        callbacks: {
+                            labelColor: function(context) {
+                                return {
+                                    borderColor: context.dataset.borderColor,
+                                    backgroundColor: context.dataset.backgroundColor,
+                                    borderWidth: 2,
+                                    borderRadius: 2,
+                                };
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: { color: gridColor, drawBorder: false },
+                        ticks: { color: axisColor, font: { size: 11 } },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: axisColor, font: { size: 11, weight: 600 } },
+                        border: { display: false }
+                    }
+                }
+            };
             
             // Content Distribution Pie Chart
             const pieCtx = document.getElementById('contentPieChart');
@@ -580,33 +749,17 @@
                         datasets: [{
                             data: [{{ $stats['cities'] }}, {{ $stats['destinations'] }}],
                             backgroundColor: [moroccoRedLight, moroccoGreyLight],
-                            borderColor: isDark ? '#1f2937' : moroccoWhite,
-                            borderWidth: 3,
-                            hoverOffset: 10
+                            borderColor: isDark ? '#1f2937' : '#ffffff',
+                            borderWidth: 2,
+                            hoverOffset: 4
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
+                        ...commonOptions,
                         plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: textColor,
-                                    font: { size: 13, weight: '600' },
-                                    padding: 15,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            },
+                            ...commonOptions.plugins,
                             tooltip: {
-                                backgroundColor: isDark ? '#1f2937' : '#ffffff',
-                                titleColor: textColor,
-                                bodyColor: textColor,
-                                borderColor: gridColor,
-                                borderWidth: 1,
-                                padding: 12,
-                                displayColors: true,
+                                ...commonOptions.plugins.tooltip,
                                 callbacks: {
                                     label: function(context) {
                                         const total = {{ $stats['cities'] + $stats['destinations'] }};
@@ -615,7 +768,8 @@
                                     }
                                 }
                             }
-                        }
+                        },
+                        scales: { x: { display: false }, y: { display: false } }
                     }
                 });
             }
@@ -635,58 +789,19 @@
                                 {{ $stats['commentaires'] }},
                                 {{ $stats['newsletters'] }}
                             ],
-                            backgroundColor: [moroccoRedLight, moroccoGreyLight, accentBlue, accentGreen],
-                            borderColor: [moroccoRedLight, moroccoGreyLight, accentBlue, accentGreen],
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            borderSkipped: false
+                            backgroundColor: [moroccoRedLight, moroccoGreyLight, '#3b82f6', '#10b981'],
+                            borderColor: [moroccoRedLight, moroccoGreyLight, '#3b82f6', '#10b981'],
+                            borderWidth: 0,
+                            borderRadius: 4,
+                            barPercentage: 0.6
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: isDark ? '#111827' : '#ffffff',
-                                titleColor: textColor,
-                                bodyColor: textColor,
-                                borderColor: isDark ? '#374151' : '#e5e7eb',
-                                borderWidth: 1,
-                                padding: 12,
-                                titleFont: { size: 13, weight: '600' },
-                                bodyFont: { size: 12 }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: axisColor,
-                                    font: { size: 11 }
-                                },
-                                grid: {
-                                    color: gridColor,
-                                    drawBorder: false,
-                                    lineWidth: 1
-                                },
-                                border: {
-                                    color: axisColor,
-                                    width: 1
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: axisColor,
-                                    font: { size: 11, weight: '600' }
-                                },
-                                grid: { display: false },
-                                border: {
-                                    color: axisColor,
-                                    width: 1
-                                }
-                            }
-                        }
+                       ...commonOptions,
+                       plugins: {
+                           ...commonOptions.plugins,
+                           legend: { display: false }
+                       }
                     }
                 });
             }
@@ -711,13 +826,11 @@
                                 borderWidth: 3,
                                 fill: true,
                                 tension: 0.4,
-                                pointBackgroundColor: moroccoRedLight,
-                                pointBorderColor: isDark ? '#111827' : moroccoWhite,
-                                pointBorderWidth: 2,
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                pointHoverBackgroundColor: moroccoRedLight,
-                                pointHoverBorderColor: isDark ? '#f3f4f6' : moroccoWhite
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointBorderColor: moroccoRedLight,
+                                pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
+                                pointBorderWidth: 2
                             },
                             {
                                 label: 'Community Engagement',
@@ -727,80 +840,120 @@
                                 borderWidth: 3,
                                 fill: true,
                                 tension: 0.4,
-                                pointBackgroundColor: moroccoGreyLight,
-                                pointBorderColor: isDark ? '#111827' : moroccoWhite,
-                                pointBorderWidth: 2,
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                pointHoverBackgroundColor: moroccoGreyLight,
-                                pointHoverBorderColor: isDark ? '#f3f4f6' : moroccoWhite
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointBorderColor: moroccoGreyLight,
+                                pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
+                                pointBorderWidth: 2
                             }
                         ]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
+                        ...commonOptions,
                         interaction: {
                             mode: 'index',
-                            intersect: false
+                            intersect: false, // Allows tooltip to appear when hovering near the line, not just ON the point
                         },
                         plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: {
-                                    color: textColor,
-                                    font: { size: 13, weight: '600' },
-                                    padding: 15,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            },
+                            ...commonOptions.plugins, 
                             tooltip: {
-                                backgroundColor: isDark ? '#111827' : '#ffffff',
-                                titleColor: textColor,
-                                bodyColor: textColor,
-                                borderColor: isDark ? '#374151' : '#e5e7eb',
-                                borderWidth: 1,
-                                padding: 12,
-                                titleFont: { size: 13, weight: '600' },
-                                bodyFont: { size: 12 }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: axisColor,
-                                    font: { size: 11 }
-                                },
-                                grid: {
-                                    color: gridColor,
-                                    drawBorder: false,
-                                    lineWidth: 1
-                                },
-                                border: {
-                                    color: axisColor,
-                                    width: 1
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: axisColor,
-                                    font: { size: 11, weight: '600' }
-                                },
-                                grid: {
-                                    color: gridColor,
-                                    drawBorder: false
-                                },
-                                border: {
-                                    color: axisColor,
-                                    width: 1
-                                }
+                                ...commonOptions.plugins.tooltip,
+                                intersect: false // Important for line charts
                             }
                         }
                     }
                 });
             }
+
+            // Top Cities Horizontal Bar Chart
+            const citiesCtx = document.getElementById('topCitiesChart');
+            if (citiesCtx) {
+                const topCities = @json($topCitiesData);
+                
+                // Check if we have data, otherwise standard fallback
+                const cityLabels = topCities.labels && topCities.labels.length ? topCities.labels : ['No Data'];
+                const cityData = topCities.data && topCities.data.length ? topCities.data : [0];
+
+                new Chart(citiesCtx, {
+                    type: 'bar', // 'bar' type with indexAxis 'y' creates horizontal bar
+                    data: {
+                        labels: cityLabels,
+                        datasets: [{
+                            label: 'Destinations',
+                            data: cityData,
+                            backgroundColor: moroccoRedLight + fillOpacity,
+                            borderColor: moroccoRedLight,
+                            borderWidth: 2,
+                            borderRadius: 4,
+                            barPercentage: 0.6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // CRITICAL: This flips the axes to make it horizontal
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: tooltipBg,
+                                titleColor: textColor,
+                                bodyColor: textColor,
+                                titleFont: { family: "'Inter', sans-serif", size: 13, weight: 600 },
+                                bodyFont: { family: "'Inter', sans-serif", size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                displayColors: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: gridColor, drawBorder: false },
+                                ticks: { color: axisColor, font: { size: 10 } },
+                                border: { display: false }, 
+                                beginAtZero: true
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { color: textColor, font: { size: 11, weight: 600 } },
+                                border: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Contact Status Doughnut Chart
+            const contactCtx = document.getElementById('contactStatusChart');
+            if (contactCtx) {
+                const contactData = @json($contactStatusData);
+                
+                new Chart(contactCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Processed', 'In Progress', 'Unread'],
+                        datasets: [{
+                            data: [contactData.traite, contactData.en_cours, contactData.non_lu],
+                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                            borderColor: isDark ? '#1f2937' : '#ffffff',
+                            borderWidth: 2,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        cutout: '75%',
+                        plugins: {
+                            ...commonOptions.plugins,
+                            legend: {
+                                ...commonOptions.plugins.legend,
+                                position: 'right'
+                            }
+                        },
+                        scales: { x: { display: false }, y: { display: false } }
+                    }
+                });
+            }
+
         });
     </script>
 @endsection
