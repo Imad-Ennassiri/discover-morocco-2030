@@ -6,388 +6,282 @@
             <h2 class="text-3xl font-display font-bold text-gray-900 dark:text-white tracking-tight">Dashboard</h2>
             <p class="text-gray-500 dark:text-gray-400 mt-1 text-lg">Overview of Morocco 2030 platform.</p>
         </div>
-        <button onclick="window.print()" class="btn-primary shadow-lg">
+        <button onclick="openReportModal()" class="btn-primary shadow-lg flex items-center">
             <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Download PDF Report
+            Review & Download Report 
         </button>
     </div>
 
-    <!-- Ultra-Professional Print Report -->
+    <!-- Report Preview Modal -->
+    <div id="reportModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeReportModal()"></div>
+
+            <!-- Modal panel -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-middle bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-4xl sm:w-full">
+                
+                <!-- Modal Header -->
+                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
+                                Official Report Preview
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    Review the generated report before downloading.
+                                </p>
+                            </div>
+                        </div>
+                        <button onclick="closeReportModal()" type="button" class="bg-white dark:bg-gray-800 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none">
+                            <span class="sr-only">Close</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body (Iframe) -->
+                <div class="bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:p-6" style="height: 65vh;">
+                    <iframe id="reportFrame" src="" class="w-full h-full border rounded-md" frameborder="0"></iframe>
+                    <div id="loadingReport" class="absolute inset-0 flex items-center justify-center bg-gray-50 dark:bg-gray-900 z-10">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-800"></div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100 dark:border-gray-700">
+                    <a href="{{ route('admin.report.generate', ['download' => 'true']) }}" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-900 text-base font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Download PDF
+                    </a>
+                    <button type="button" onclick="closeReportModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openReportModal() {
+            const modal = document.getElementById('reportModal');
+            const frame = document.getElementById('reportFrame');
+            const loader = document.getElementById('loadingReport');
+            
+            // Show modal
+            modal.classList.remove('hidden');
+            
+            // Set source if not already set or refresh
+            frame.src = "{{ route('admin.report.generate') }}";
+            
+            // Handle loading state
+            loader.classList.remove('hidden');
+            frame.onload = function() {
+                loader.classList.add('hidden');
+            };
+        }
+
+        function closeReportModal() {
+            const modal = document.getElementById('reportModal');
+            const frame = document.getElementById('reportFrame');
+            
+            modal.classList.add('hidden');
+            // Clear src to stop memory usage or keep it if caching is preferred. 
+            // Clearing it ensures fresh generation next time but feels slower.
+            // Let's clear it to reset state.
+            frame.src = 'about:blank';
+        }
+    </script>
+    </div>
+
+    <!-- Print-friendly PDF Report -->
     <div class="hidden print-only">
+        @php
+            $contentTotal = max($stats['cities'] + $stats['destinations'], 1);
+            $engagementTotal = $stats['volontaires'] + $stats['contacts'] + $stats['commentaires'] + $stats['newsletters'];
+            $cityPercent = round(($stats['cities'] / $contentTotal) * 100, 1);
+            $destPercent = round(($stats['destinations'] / $contentTotal) * 100, 1);
+
+            $channels = [
+                'Volunteers' => $stats['volontaires'],
+                'Contacts' => $stats['contacts'],
+                'Comments' => $stats['commentaires'],
+                'Subscribers' => $stats['newsletters'],
+            ];
+            arsort($channels);
+            $topChannel = array_key_first($channels);
+            $topChannelValue = $channels[$topChannel];
+        @endphp
+
         <style>
-            @page {
-                size: A4;
-                margin: 0;
-            }
-            .print-page {
-                page-break-after: always;
-                padding: 2cm 1.5cm;
-                min-height: 29.7cm;
-                background: white;
-            }
-            .print-page:last-child {
-                page-break-after: auto;
-            }
-            .report-header {
-                background: #991b1b;
+            @page { size: A4; margin: 0; }
+            .print-page { page-break-after: always; padding: 2.5cm 2cm 2cm 2cm; min-height: 29.7cm; background: white; color: #111827; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+            .print-page:last-child { page-break-after: auto; }
+            .cover {
+                background: linear-gradient(135deg, #991b1b 0%, #111827 100%);
                 color: white;
-                padding: 2rem 1.5rem;
-                margin: -2cm -1.5cm 1.5cm -1.5cm;
-                text-align: center;
-                border-bottom: 4px solid #6b7280;
+                padding: 2.5rem;
+                margin: -2.5cm -2cm 2rem -2cm;
+                border-bottom: 6px solid #f59e0b;
             }
-            .stat-box {
-                border: 1px solid #d1d5db;
-                border-radius: 6px;
-                padding: 1rem;
-                background: #f9fafb;
-                position: relative;
-                overflow: hidden;
-            }
-            .stat-box::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 4px;
-                height: 100%;
-                background: #991b1b;
-            }
-            .section-title {
-                font-size: 1.125rem;
-                font-weight: 700;
-                color: #991b1b;
-                margin-bottom: 1rem;
-                padding-bottom: 0.5rem;
-                border-bottom: 3px solid #991b1b;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-            }
-            .data-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 1rem 0;
-                font-size: 0.75rem;
-                border: 1px solid #d1d5db;
-            }
-            .data-table thead {
-                background: #991b1b;
-                color: white;
-            }
-            .data-table th {
-                padding: 0.5rem 0.75rem;
-                text-align: left;
-                font-weight: 600;
-                font-size: 0.7rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                border-bottom: 2px solid #6b7280;
-            }
-            .data-table td {
-                padding: 0.5rem 0.75rem;
-                border-bottom: 1px solid #e5e7eb;
-                font-size: 0.75rem;
-                color: #374151;
-            }
-            .data-table tbody tr:nth-child(even) {
-                background: #f9fafb;
-            }
-            .data-table tbody tr:nth-child(odd) {
-                background: white;
-            }
-            .metric-card {
-                background: white;
-                border: 2px solid #991b1b;
-                border-radius: 6px;
-                padding: 0.875rem;
-                box-shadow: 0 2px 4px rgba(153, 27, 27, 0.1);
-            }
-            .metric-value {
-                font-size: 1.75rem;
-                font-weight: 700;
-                color: #991b1b;
-                line-height: 1;
-            }
-            .metric-label {
-                font-size: 0.7rem;
-                color: #6b7280;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-top: 0.375rem;
-            }
-            .progress-bar {
-                height: 18px;
-                background: #e5e7eb;
-                border-radius: 9px;
-                overflow: hidden;
-                position: relative;
-                border: 1px solid #d1d5db;
-            }
-            .progress-fill {
-                height: 100%;
-                background: #991b1b;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                padding-right: 0.5rem;
-                color: white;
-                font-weight: 600;
-                font-size: 0.65rem;
-            }
-            .insight-box {
-                background: #fef3c7;
-                border-left: 4px solid #991b1b;
-                padding: 0.75rem 1rem;
-                margin: 0.75rem 0;
-                border-radius: 3px;
-                font-size: 0.75rem;
-                color: #374151;
-            }
-            .footer-bar {
-                background: #374151;
-                color: white;
-                padding: 1rem 1.5rem;
-                margin: 1.5cm -1.5cm -2cm -1.5cm;
-                text-align: center;
-                font-size: 0.7rem;
-                border-top: 4px solid #991b1b;
-            }
-            .grid-2 {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1rem;
-            }
-            .grid-3 {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 1rem;
-            }
-            .badge {
-                display: inline-block;
-                padding: 0.125rem 0.5rem;
-                border-radius: 9999px;
-                font-size: 0.65rem;
-                font-weight: 600;
-            }
-            .badge-success { background: #d1fae5; color: #065f46; }
-            .badge-warning { background: #fef3c7; color: #92400e; }
-            .badge-info { background: #dbeafe; color: #1e40af; }
+            .cover h1 { font-size: 2.4rem; margin: 0; letter-spacing: 0.04em; }
+            .cover p { margin: 0.35rem 0; font-size: 0.95rem; opacity: 0.9; }
+            .pill { display: inline-block; padding: 0.35rem 0.75rem; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; font-size: 0.8rem; margin-top: 0.75rem; }
+            .section-title { font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 0.75rem 0; color: #991b1b; }
+            .lead { font-size: 0.95rem; line-height: 1.6; color: #1f2937; margin-bottom: 1.25rem; }
+            .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0 1.75rem 0; }
+            .kpi-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; background: #f9fafb; }
+            .kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 0.35rem; }
+            .kpi-value { font-size: 1.8rem; font-weight: 800; color: #991b1b; }
+            .kpi-note { font-size: 0.8rem; color: #374151; margin-top: 0.35rem; }
+            .bar-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.35rem 0; }
+            .bar-label { width: 42%; font-weight: 600; font-size: 0.85rem; color: #111827; }
+            .bar-track { flex: 1; height: 14px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+            .bar-fill { height: 100%; background: linear-gradient(90deg, #991b1b, #f59e0b); }
+            .bar-value { width: 48px; text-align: right; font-size: 0.85rem; color: #111827; }
+            .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; background: white; margin-bottom: 1.25rem; }
+            .two-col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; }
+            .list { margin: 0.5rem 0 0 0; padding-left: 1.1rem; color: #1f2937; }
+            .list li { margin: 0.25rem 0; }
+            .table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; font-size: 0.85rem; }
+            .table th { text-align: left; padding: 0.5rem; background: #991b1b; color: white; letter-spacing: 0.03em; font-size: 0.78rem; }
+            .table td { padding: 0.45rem 0.5rem; border-bottom: 1px solid #e5e7eb; color: #111827; }
+            .muted { color: #6b7280; font-size: 0.83rem; }
+            .tag { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 8px; background: #ecfeff; color: #0ea5e9; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.02em; }
+            .footer { text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 0.78rem; color: #6b7280; }
         </style>
 
-        <!-- Page 1: Cover & Executive Summary -->
+        <!-- Page 1: Cover + Executive Summary -->
         <div class="print-page">
-            <div class="report-header">
-                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.375rem;">MOROCCO 2030</div>
-                <div style="font-size: 1.25rem; font-weight: 300; margin-bottom: 1rem;">Platform Performance Report</div>
-                <div style="font-size: 0.875rem; opacity: 0.9;">FIFA World Cup Edition</div>
-                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.3);">
-                    <div style="font-size: 0.75rem;">Report Generated: {{ now()->format('F d, Y') }} at {{ now()->format('H:i') }}</div>
-                    <div style="font-size: 0.75rem; margin-top: 0.25rem;">Reporting Period: {{ now()->subDays(30)->format('M d') }} - {{ now()->format('M d, Y') }}</div>
+            <div class="cover">
+                <h1>Morocco 2030 — Performance Report</h1>
+                <p>FIFA World Cup Edition · Generated {{ now()->format('F d, Y \\a\\t H:i') }}</p>
+                <p class="pill">Reporting window: Last 30 days</p>
+            </div>
+
+            <h3 class="section-title">Executive Summary</h3>
+            <p class="lead">
+                The platform now carries <strong>{{ $stats['cities'] }}</strong> host cities and <strong>{{ $stats['destinations'] }}</strong> curated destinations,
+                combining for <strong>{{ $contentTotal }}</strong> content items. Community engagement totals <strong>{{ $engagementTotal }}</strong> interactions,
+                led by <strong>{{ $topChannel }}</strong> ({{ $topChannelValue }}). Coverage skews {{ $cityPercent }}% toward cities and
+                {{ $destPercent }}% toward destinations, indicating balanced storytelling across host locations and attractions.
+            </p>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Content Footprint</div>
+                    <div class="kpi-value">{{ $contentTotal }}</div>
+                    <div class="kpi-note">Cities: {{ $stats['cities'] }} · Destinations: {{ $stats['destinations'] }}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Engagement Volume</div>
+                    <div class="kpi-value">{{ $engagementTotal }}</div>
+                    <div class="kpi-note">Volunteers, contacts, comments, subscribers combined</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Top Channel</div>
+                    <div class="kpi-value">{{ $topChannelValue }}</div>
+                    <div class="kpi-note">{{ $topChannel }} lead current engagement mix</div>
                 </div>
             </div>
 
-            <h2 class="section-title">Executive Summary</h2>
-            
-            <div class="grid-3" style="margin-bottom: 1.5rem;">
-                <div class="metric-card">
-                    <div class="metric-value">{{ $stats['cities'] }}</div>
-                    <div class="metric-label">Host Cities</div>
-                    <div style="margin-top: 0.5rem; font-size: 0.65rem; color: #059669;">
-                        ▲ Active Locations
-                    </div>
+            <div class="card">
+                <div class="section-title" style="margin-bottom: 0.5rem;">Content Coverage</div>
+                <div class="bar-row">
+                    <div class="bar-label">Host Cities</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: {{ $cityPercent }}%;"></div></div>
+                    <div class="bar-value">{{ $cityPercent }}%</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value">{{ $stats['destinations'] }}</div>
-                    <div class="metric-label">Destinations</div>
-                    <div style="margin-top: 0.5rem; font-size: 0.65rem; color: #059669;">
-                        ▲ Tourist Attractions
-                    </div>
+                <div class="bar-row">
+                    <div class="bar-label">Tourist Destinations</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: {{ $destPercent }}%; background: linear-gradient(90deg,#0ea5e9,#22c55e);"></div></div>
+                    <div class="bar-value">{{ $destPercent }}%</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value">{{ $stats['cities'] + $stats['destinations'] }}</div>
-                    <div class="metric-label">Total Content</div>
-                    <div style="margin-top: 0.5rem; font-size: 0.65rem; color: #6b7280;">
-                        ● Platform Coverage
-                    </div>
+                <p class="lead" style="margin-top: 0.75rem;">
+                    City-led stories remain the core of the experience, while destination content closes the gap. Maintaining this mix keeps both
+                    host-city readiness and cultural discovery visible to visitors.
+                </p>
+            </div>
+        </div>
+
+        <!-- Page 2: Engagement & Narrative -->
+        <div class="print-page">
+            <h3 class="section-title">Engagement Narrative</h3>
+            <div class="two-col">
+                <div class="card">
+                    <p class="lead" style="margin-bottom: 0.8rem;">
+                        Engagement is paced by <strong>{{ $topChannel }}</strong>, indicating strong interest through that channel. Contacts and comments
+                        provide a healthy feedback loop, while newsletter subscribers form a nurture pool for future volunteer conversion.
+                    </p>
+                    <ul class="list">
+                        <li><strong>Volunteers:</strong> {{ $stats['volontaires'] }} applications; keep the onboarding flow short and clear.</li>
+                        <li><strong>Contacts:</strong> {{ $stats['contacts'] }} inquiries; add quick-response templates for faster follow-up.</li>
+                        <li><strong>Comments:</strong> {{ $stats['commentaires'] }} community inputs; highlight top comments on destination pages.</li>
+                        <li><strong>Subscribers:</strong> {{ $stats['newsletters'] }} readers; schedule a weekly “Road to 2030” digest.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th>Count</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Volunteers</td><td>{{ $stats['volontaires'] }}</td><td>Operational workforce</td></tr>
+                            <tr><td>Contacts</td><td>{{ $stats['contacts'] }}</td><td>Service & partnerships</td></tr>
+                            <tr><td>Comments</td><td>{{ $stats['commentaires'] }}</td><td>On-page signal</td></tr>
+                            <tr><td>Subscribers</td><td>{{ $stats['newsletters'] }}</td><td>Nurture & re-engage</td></tr>
+                            <tr><td><strong>Total</strong></td><td><strong>{{ $engagementTotal }}</strong></td><td><span class="tag">Healthy</span></td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="insight-box">
-                <strong>Key Insight:</strong> The platform currently features {{ $stats['cities'] }} major cities hosting the 2030 FIFA World Cup, 
-                with {{ $stats['destinations'] }} curated destinations showcasing Morocco's rich cultural heritage and tourist attractions.
+            <div class="card">
+                <div class="section-title" style="margin-bottom: 0.5rem;">Platform Momentum</div>
+                <p class="lead" style="margin-bottom: 0.4rem;">
+                    The platform’s momentum is anchored by consistent content growth and multi-channel engagement. Converting high-intent
+                    channels ({{ $topChannel }}) into deeper actions (volunteering and city discovery) should be prioritized.
+                </p>
+                <ul class="list">
+                    <li>Pair new destination drops with a “nearby city” call-to-action to cross-pollinate traffic.</li>
+                    <li>Use subscribers as a retargeting audience for volunteer drives and host-city updates.</li>
+                    <li>Keep a weekly cadence of destination highlights to balance the {{ $cityPercent }}% city focus.</li>
+                </ul>
             </div>
 
-            <h2 class="section-title" style="margin-top: 2rem;">Community Engagement Metrics</h2>
-
-            <div class="grid-2">
-                <div class="stat-box">
-                    <div style="padding-left: 0.75rem;">
-                        <div style="font-size: 0.7rem; color: #6b7280; margin-bottom: 0.375rem;">VOLUNTEER APPLICATIONS</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #1e3a8a;">{{ $stats['volontaires'] }}</div>
-                        <div style="margin-top: 0.75rem;">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: {{ min(($stats['volontaires'] / 100) * 100, 100) }}%;">
-                                    {{ $stats['volontaires'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <div style="padding-left: 0.75rem;">
-                        <div style="font-size: 0.7rem; color: #6b7280; margin-bottom: 0.375rem;">CONTACT MESSAGES</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #1e3a8a;">{{ $stats['contacts'] }}</div>
-                        <div style="margin-top: 0.75rem;">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: {{ min(($stats['contacts'] / 150) * 100, 100) }}%;">
-                                    {{ $stats['contacts'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="card">
+                <div class="section-title" style="margin-bottom: 0.5rem;">Recent Activity Snapshot</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>When</th>
+                            <th>Event</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($recent_activities->take(5) as $activity)
+                            <tr>
+                                <td>{{ $activity->created_at->format('M d, H:i') }}</td>
+                                <td>{{ $activity->message }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="2" class="muted">No recent activity logged.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
-            <div class="grid-2" style="margin-top: 1rem;">
-                <div class="stat-box">
-                    <div style="padding-left: 0.75rem;">
-                        <div style="font-size: 0.7rem; color: #6b7280; margin-bottom: 0.375rem;">USER COMMENTS</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #1e3a8a;">{{ $stats['commentaires'] }}</div>
-                        <div style="margin-top: 0.75rem;">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: {{ min(($stats['commentaires'] / 80) * 100, 100) }}%;">
-                                    {{ $stats['commentaires'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <div style="padding-left: 0.75rem;">
-                        <div style="font-size: 0.7rem; color: #6b7280; margin-bottom: 0.375rem;">NEWSLETTER SUBSCRIBERS</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #1e3a8a;">{{ $stats['newsletters'] }}</div>
-                        <div style="margin-top: 0.75rem;">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: {{ min(($stats['newsletters'] / 200) * 100, 100) }}%;">
-                                    {{ $stats['newsletters'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h2 class="section-title" style="margin-top: 2rem;">Content Distribution Analysis</h2>
-
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Content Type</th>
-                        <th style="text-align: right;">Count</th>
-                        <th style="text-align: right;">Percentage</th>
-                        <th style="text-align: center;">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $contentTotal = max($stats['cities'] + $stats['destinations'], 1);
-                        $cityPercent = round(($stats['cities'] / $contentTotal) * 100, 1);
-                        $destPercent = round(($stats['destinations'] / $contentTotal) * 100, 1);
-                    @endphp
-                    <tr>
-                        <td style="font-weight: 600;">Host Cities</td>
-                        <td style="text-align: right; font-weight: 700; color: #1e3a8a;">{{ $stats['cities'] }}</td>
-                        <td style="text-align: right;">{{ $cityPercent }}%</td>
-                        <td style="text-align: center;"><span class="badge badge-success">Active</span></td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: 600;">Tourist Destinations</td>
-                        <td style="text-align: right; font-weight: 700; color: #1e3a8a;">{{ $stats['destinations'] }}</td>
-                        <td style="text-align: right;">{{ $destPercent }}%</td>
-                        <td style="text-align: center;"><span class="badge badge-success">Active</span></td>
-                    </tr>
-                    <tr style="background: #f3f4f6; font-weight: 700;">
-                        <td>TOTAL CONTENT</td>
-                        <td style="text-align: right; color: #1e3a8a;">{{ $contentTotal }}</td>
-                        <td style="text-align: right;">100%</td>
-                        <td style="text-align: center;"><span class="badge badge-info">Complete</span></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h2 class="section-title" style="margin-top: 2rem;">Engagement Performance Matrix</h2>
-
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Engagement Channel</th>
-                        <th style="text-align: right;">Total Count</th>
-                        <th style="text-align: center;">Performance</th>
-                        <th style="text-align: center;">Trend</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="font-weight: 600;">Volunteer Applications</td>
-                        <td style="text-align: right; font-weight: 700; color: #1e3a8a;">{{ $stats['volontaires'] }}</td>
-                        <td style="text-align: center;">
-                            <span class="badge {{ $stats['volontaires'] > 50 ? 'badge-success' : ($stats['volontaires'] > 20 ? 'badge-warning' : 'badge-info') }}">
-                                {{ $stats['volontaires'] > 50 ? 'Excellent' : ($stats['volontaires'] > 20 ? 'Good' : 'Growing') }}
-                            </span>
-                        </td>
-                        <td style="text-align: center; color: #059669; font-weight: 600; font-size: 0.7rem;">▲ Positive</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: 600;">Contact Inquiries</td>
-                        <td style="text-align: right; font-weight: 700; color: #1e3a8a;">{{ $stats['contacts'] }}</td>
-                        <td style="text-align: center;">
-                            <span class="badge {{ $stats['contacts'] > 100 ? 'badge-success' : ($stats['contacts'] > 30 ? 'badge-warning' : 'badge-info') }}">
-                                {{ $stats['contacts'] > 100 ? 'High' : ($stats['contacts'] > 30 ? 'Active' : 'Moderate') }}
-                            </span>
-                        </td>
-                        <td style="text-align: center; color: #059669; font-weight: 600; font-size: 0.7rem;">▲ Increasing</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: 600;">User Comments</td>
-                        <td style="text-align: right; font-weight: 700; color: #1e3a8a;">{{ $stats['commentaires'] }}</td>
-                        <td style="text-align: center;">
-                            <span class="badge {{ $stats['commentaires'] > 50 ? 'badge-success' : 'badge-warning' }}">
-                                {{ $stats['commentaires'] > 50 ? 'Engaged' : 'Building' }}
-                            </span>
-                        </td>
-                        <td style="text-align: center; color: #059669; font-weight: 600; font-size: 0.7rem;">▲ Steady</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: 600;">Newsletter Subscriptions</td>
-                        <td style="text-align: right; font-weight: 700; color: #1e3a8a;">{{ $stats['newsletters'] }}</td>
-                        <td style="text-align: center;">
-                            <span class="badge {{ $stats['newsletters'] > 100 ? 'badge-success' : 'badge-warning' }}">
-                                {{ $stats['newsletters'] > 100 ? 'Strong' : 'Growing' }}
-                            </span>
-                        </td>
-                        <td style="text-align: center; color: #059669; font-weight: 600; font-size: 0.7rem;">▲ Growing</td>
-                    </tr>
-                    <tr style="background: #f3f4f6; font-weight: 700;">
-                        <td>TOTAL ENGAGEMENT</td>
-                        <td style="text-align: right; color: #1e3a8a;">{{ $stats['volontaires'] + $stats['contacts'] + $stats['commentaires'] + $stats['newsletters'] }}</td>
-                        <td style="text-align: center;"><span class="badge badge-success">Healthy</span></td>
-                        <td style="text-align: center; color: #059669; font-size: 0.7rem;">▲ Positive</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="insight-box" style="margin-top: 1.5rem;">
-                <strong>Strategic Recommendation:</strong> The platform demonstrates strong engagement across all channels. 
-                Continue to enhance content quality and user experience to maintain positive growth trajectory. 
-                Focus on converting newsletter subscribers into active volunteers for the 2030 World Cup.
-            </div>
-
-            <div class="footer-bar">
-                <div style="font-weight: 600; margin-bottom: 0.375rem;">MOROCCO 2030 PLATFORM - CONFIDENTIAL</div>
-                <div style="opacity: 0.8; font-size: 0.65rem;">This report contains proprietary information. © {{ now()->year }} Morocco 2030. All rights reserved.</div>
-                <div style="opacity: 0.8; margin-top: 0.375rem; font-size: 0.65rem;">Generated: {{ now()->format('Y-m-d H:i:s') }}</div>
+            <div class="footer">
+                Morocco 2030 Platform · Confidential — {{ now()->year }} · Generated {{ now()->format('Y-m-d H:i:s') }}
             </div>
         </div>
     </div>

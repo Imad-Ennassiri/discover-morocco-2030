@@ -36,4 +36,5 @@ Route::prefix('admin_morocco_2030')->name('admin.')->group(function () {
     Route::resource('contacts', App\Http\Controllers\Admin\ContactController::class);
     Route::get('newsletters/export', [App\Http\Controllers\Admin\NewsletterController::class, 'exportCsv'])->name('newsletters.export');
     Route::resource('newsletters', App\Http\Controllers\Admin\NewsletterController::class);
+    Route::get('report/generate', [App\Http\Controllers\Admin\ReportController::class, 'generate'])->name('report.generate');
 });
