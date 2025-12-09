@@ -62,7 +62,6 @@
                 const query = this.value;
                 const form = document.getElementById('search-form');
                 
-                // Get other filters
                 const cityId = form.querySelector('select[name="city_id"]').value;
                 const category = form.querySelector('select[name="category"]').value;
                 const sort = form.querySelector('select[name="sort"]').value;
@@ -75,16 +74,26 @@
                     if (sort) url.searchParams.set('sort', sort);
 
                     fetch(url, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
+                        headers: {'X-Requested-With': 'XMLHttpRequest'}
                     })
                     .then(response => response.text())
-                    .then(html => {
-                        tableContainer.innerHTML = html;
-                    })
+                    .then(html => { tableContainer.innerHTML = html; })
                     .catch(error => console.error('Error:', error));
-                }, 300); // Debounce duration
+                }, 300);
+            });
+
+            // Event delegation for View buttons
+            tableContainer.addEventListener('click', function(e) {
+                const btn = e.target.closest('.view-btn');
+                if (btn && btn.dataset.destination) {
+                    e.preventDefault();
+                    try {
+                        const destination = JSON.parse(btn.dataset.destination);
+                        window.premiumModal.open(destination, 'destination', 'selectedDestination', 'showModal');
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
             });
         });
     </script>

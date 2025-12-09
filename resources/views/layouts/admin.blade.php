@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-gray-50 dark:bg-black">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-gray-50 dark:bg-gray-900">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -75,6 +75,7 @@
     </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/premium-modal.js') }}"></script>
     <style>
         [x-cloak] { display: none !important; }
         
@@ -123,8 +124,8 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .dark .glass-card {
-            background: #111827;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: #1f2937;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
         }
         
@@ -222,6 +223,39 @@
         .btn-primary:active {
             transform: translateY(0);
         }
+        
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dark .btn-secondary {
+            background: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .dark .btn-secondary:hover {
+            background: #4b5563;
+            border-color: #6b7280;
+        }
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
 
         /* Print Styles for Report */
         @media print {
@@ -271,8 +305,8 @@
         <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black/80 z-40 lg:hidden glass no-print" @click="sidebarOpen = false"></div>
 
         <!-- Sidebar -->
-        <div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="sidebar fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 ease-in-out lg:translate-x-0 no-print flex flex-col">
-            <div class="flex items-center justify-center h-24 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black flex-shrink-0">
+        <div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="sidebar fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 ease-in-out lg:translate-x-0 no-print flex flex-col">
+            <div class="flex items-center justify-center h-24 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary-500/30">
                         M
@@ -376,7 +410,7 @@
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col overflow-hidden lg:ml-72">
             <!-- Fixed Header -->
-            <header class="fixed top-0 right-0 left-0 lg:left-72 z-30 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 md:px-8 h-24 flex items-center justify-between no-print">
+            <header class="fixed top-0 right-0 left-0 lg:left-72 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 md:px-8 h-24 flex items-center justify-between no-print">
                 <div class="flex items-center">
                     <button @click="sidebarOpen = true" class="lg:hidden text-gray-500 hover:text-gray-700 focus:outline-none mr-4">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -452,13 +486,50 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-black p-4 md:p-8 mt-24" style="scrollbar-width: thin;">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 md:p-8 mt-24" style="scrollbar-width: thin;">
                 <div class="max-w-7xl mx-auto animate-fade-in">
                     @yield('content')
                 </div>
             </main>
         </div>
     </div>
+
+    <!-- Global Loader -->
+    <div id="global-loader" class="fixed inset-0 z-[100] bg-white dark:bg-gray-900 flex items-center justify-center transition-all duration-700">
+        <div class="relative flex flex-col items-center">
+            <!-- Animated Logo Container -->
+            <div class="relative w-24 h-24 mb-6">
+                <div class="absolute inset-0 border-4 border-gray-100 dark:border-gray-800 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-transparent border-t-primary-600 rounded-full animate-spin"></div>
+                <div class="absolute inset-4 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full animate-pulse shadow-lg shadow-primary-500/30 flex items-center justify-center">
+                    <span class="text-white font-bold text-2xl">M</span>
+                </div>
+            </div>
+            
+            <div class="text-center space-y-2">
+                <div class="text-2xl font-display font-bold tracking-tight">
+                    MOROCCO<span class="text-primary-600">2030</span>
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 font-medium animate-pulse">
+                    Loading Experience...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('global-loader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                loader.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 700);
+            }, 800);
+        });
+    </script>
+    
     
     <!-- Global Delete Confirmation Script -->
     <script>

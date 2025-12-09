@@ -52,20 +52,30 @@
                 if (sort) url.searchParams.set('sort', sort);
 
                 fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
                 })
                 .then(response => response.text())
-                .then(html => {
-                    tableContainer.innerHTML = html;
-                })
+                .then(html => { tableContainer.innerHTML = html; })
                 .catch(error => console.error('Error:', error));
             };
 
             searchInput.addEventListener('input', function() {
                 clearTimeout(timeout);
                 timeout = setTimeout(fetchResults, 300);
+            });
+
+            // Event delegation for View buttons
+            tableContainer.addEventListener('click', function(e) {
+                const btn = e.target.closest('.view-btn');
+                if (btn && btn.dataset.paragraph) {
+                    e.preventDefault();
+                    try {
+                        const paragraph = JSON.parse(btn.dataset.paragraph);
+                        window.premiumModal.open(paragraph, 'destinationParagraph', 'selectedParagraph', 'showModal');
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
             });
         });
     </script>

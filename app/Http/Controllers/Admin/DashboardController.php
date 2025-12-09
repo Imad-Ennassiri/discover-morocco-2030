@@ -81,8 +81,8 @@ class DashboardController extends Controller
 
     private function getDailyActivityData()
     {
-        // Always show last 30 days
-        $startDate = now()->subDays(29)->startOfDay();
+        // Show last 5 days only
+        $startDate = now()->subDays(4)->startOfDay(); // 4 days ago + today = 5 days
         $endDate = now()->startOfDay();
 
         // Get daily increments
@@ -117,41 +117,52 @@ class DashboardController extends Controller
             ->pluck('count', 'date')->toArray();
 
         $labels = [];
-        $contentData = [];
-        $engagementData = [];
+        $cities = [];
+        $destinations = [];
+        $volontaires = [];
+        $contacts = [];
+        $commentaires = [];
+        $newsletters = [];
         
         $currentDate = $startDate->copy();
 
         while ($currentDate <= $endDate) {
             $dateKey = $currentDate->format('Y-m-d');
             
-            // Labels
+            // Labels - Show all dates since we only have 5 days
             if ($currentDate->isToday()) {
                 $labels[] = 'Today';
-            } elseif ($currentDate->diffInDays($endDate) % 5 == 0) {
-                // Show date every 5 days
-                $labels[] = $currentDate->format('M d');
+            } elseif ($currentDate->isYesterday()) {
+                $labels[] = 'Yesterday';
             } else {
-                $labels[] = ''; // Empty label for spacing
+                $labels[] = $currentDate->format('M d');
             }
             
             // Daily increments ONLY (No running total)
-            $contentToday = ($citiesData[$dateKey] ?? 0) + ($destinationsData[$dateKey] ?? 0);
-            $engagementToday = ($volontairesData[$dateKey] ?? 0) + 
-                              ($contactsData[$dateKey] ?? 0) + 
-                              ($commentairesData[$dateKey] ?? 0) + 
-                              ($newslettersData[$dateKey] ?? 0);
-
-            $contentData[] = $contentToday;
-            $engagementData[] = $engagementToday;
+            $cities[] = $citiesData[$dateKey] ?? 0;
+            $destinations[] = $destinationsData[$dateKey] ?? 0;
+            $volontaires[] = $volontairesData[$dateKey] ?? 0;
+            $contacts[] = $contactsData[$dateKey] ?? 0;
+            $commentaires[] = $commentairesData[$dateKey] ?? 0;
+            $newsletters[] = $newslettersData[$dateKey] ?? 0;
             
             $currentDate->addDay();
         }
 
         return [
             'labels' => $labels,
-            'content' => $contentData,
-            'engagement' => $engagementData,
+            'content' => [
+                'cities' => $cities,
+                'destinations' => $destinations,
+            ],
+            'community' => [
+                'volontaires' => $volontaires,
+                'contacts' => $contacts,
+                'commentaires' => $commentaires,
+                'newsletters' => $newsletters,
+            ],
         ];
     }
 }
+
+

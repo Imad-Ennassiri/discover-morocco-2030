@@ -415,11 +415,44 @@
             </div>
         </div>
 
-        <!-- Full Width Line Chart -->
-        <div class="glass-card rounded-2xl p-6 mb-8">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Platform Activity Overview</h3>
-            <div style="height: 300px;">
-                <canvas id="activityLineChart"></canvas>
+        <!-- Two Charts Side by Side - Content & Community -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+            <!-- Content Activity Chart -->
+            <div class="glass-card rounded-2xl p-8">
+                <div class="flex items-start justify-between mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Content Activity</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Last 5 days - Cities and destinations added</p>
+                    </div>
+                    <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Updated {{ now()->format('H:i') }}</span>
+                    </div>
+                </div>
+                <div style="height: 450px;">
+                    <canvas id="contentActivityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Community Engagement Chart -->
+            <div class="glass-card rounded-2xl p-8">
+                <div class="flex items-start justify-between mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Community Engagement</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Last 5 days - Community interactions and signups</p>
+                    </div>
+                    <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Updated {{ now()->format('H:i') }}</span>
+                    </div>
+                </div>
+                <div style="height: 450px;">
+                    <canvas id="communityEngagementChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -806,60 +839,287 @@
                 });
             }
             
-            // Platform Activity Line Chart
-            const lineCtx = document.getElementById('activityLineChart');
-            if (lineCtx) {
+            // Content Activity Chart - Minimalist Design
+            const contentCtx = document.getElementById('contentActivityChart');
+            if (contentCtx) {
                 const activityLabels = @json($activityData['labels'] ?? []);
-                const contentData = @json($activityData['content'] ?? []);
-                const engagementData = @json($activityData['engagement'] ?? []);
+                const citiesData = @json($activityData['content']['cities'] ?? []);
+                const destinationsData = @json($activityData['content']['destinations'] ?? []);
                 
-                new Chart(lineCtx, {
+                new Chart(contentCtx, {
                     type: 'line',
                     data: {
                         labels: activityLabels,
                         datasets: [
                             {
-                                label: 'Content Items',
-                                data: contentData,
-                                borderColor: moroccoRedLight,
-                                backgroundColor: moroccoRedLight + fillOpacity,
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointBorderColor: moroccoRedLight,
+                                label: 'Cities',
+                                data: citiesData,
+                                borderColor: isDark ? '#dc2626' : '#991b1b',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3,
+                                pointHoverRadius: 5,
+                                pointBorderColor: isDark ? '#dc2626' : '#991b1b',
                                 pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
-                                pointBorderWidth: 2
+                                pointBorderWidth: 2,
+                                pointHoverBorderWidth: 2
                             },
                             {
-                                label: 'Community Engagement',
-                                data: engagementData,
-                                borderColor: moroccoGreyLight,
-                                backgroundColor: moroccoGreyLight + fillOpacity,
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointBorderColor: moroccoGreyLight,
+                                label: 'Destinations',
+                                data: destinationsData,
+                                borderColor: isDark ? '#f59e0b' : '#d97706',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3,
+                                pointHoverRadius: 5,
+                                pointBorderColor: isDark ? '#f59e0b' : '#d97706',
                                 pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
-                                pointBorderWidth: 2
+                                pointBorderWidth: 2,
+                                pointHoverBorderWidth: 2
                             }
                         ]
                     },
                     options: {
-                        ...commonOptions,
+                        responsive: true,
+                        maintainAspectRatio: false,
                         interaction: {
                             mode: 'index',
-                            intersect: false, // Allows tooltip to appear when hovering near the line, not just ON the point
+                            intersect: false,
                         },
                         plugins: {
-                            ...commonOptions.plugins, 
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'end',
+                                labels: {
+                                    color: textColor,
+                                    font: { family: "'Inter', sans-serif", size: 11, weight: 500 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 6,
+                                    boxHeight: 6,
+                                    padding: 15
+                                }
+                            },
                             tooltip: {
-                                ...commonOptions.plugins.tooltip,
-                                intersect: false // Important for line charts
+                                enabled: true,
+                                backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                                titleColor: textColor,
+                                bodyColor: textColor,
+                                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { family: "'Inter', sans-serif", size: 12, weight: 600 },
+                                bodyFont: { family: "'Inter', sans-serif", size: 11, weight: 400 },
+                                displayColors: true,
+                                boxPadding: 6,
+                                intersect: false,
+                                mode: 'index',
+                                callbacks: {
+                                    title: function(context) {
+                                        return context[0].label;
+                                    },
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y + ' added';
+                                    }
+                                }
                             }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { 
+                                    color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)', 
+                                    drawBorder: false,
+                                    lineWidth: 1
+                                },
+                                ticks: { 
+                                    color: isDark ? '#9ca3af' : '#6b7280', 
+                                    font: { size: 10, weight: 400 },
+                                    padding: 8,
+                                    precision: 0
+                                },
+                                border: { display: false }
+                            },
+                            x: {
+                                grid: { display: false, drawBorder: false },
+                                ticks: { 
+                                    color: isDark ? '#9ca3af' : '#6b7280', 
+                                    font: { size: 10, weight: 500 },
+                                    padding: 8
+                                },
+                                border: { display: false }
+                            }
+                        },
+                        layout: {
+                            padding: { top: 10, right: 10, bottom: 10, left: 10 }
+                        }
+                    }
+                });
+            }
+
+            // Community Engagement Chart - Minimalist Design
+            const communityCtx = document.getElementById('communityEngagementChart');
+            if (communityCtx) {
+                const activityLabels = @json($activityData['labels'] ?? []);
+                const volontairesData = @json($activityData['community']['volontaires'] ?? []);
+                const contactsData = @json($activityData['community']['contacts'] ?? []);
+                const commentairesData = @json($activityData['community']['commentaires'] ?? []);
+                const newslettersData = @json($activityData['community']['newsletters'] ?? []);
+                
+                // Debug: Check if we have subscribers data
+                console.log('Subscribers Data:', newslettersData);
+                console.log('Volunteers Data:', volontairesData);
+                console.log('Contacts Data:', contactsData);
+                console.log('Comments Data:', commentairesData);
+                
+                new Chart(communityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: activityLabels,
+                        datasets: [
+                            {
+                                label: 'Volunteers',
+                                data: volontairesData,
+                                borderColor: '#8b5cf6',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3,
+                                pointHoverRadius: 5,
+                                pointBorderColor: '#8b5cf6',
+                                pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
+                                pointBorderWidth: 2,
+                                pointHoverBorderWidth: 2
+                            },
+                            {
+                                label: 'Contacts',
+                                data: contactsData,
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3,
+                                pointHoverRadius: 5,
+                                pointBorderColor: '#3b82f6',
+                                pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
+                                pointBorderWidth: 2,
+                                pointHoverBorderWidth: 2
+                            },
+                            {
+                                label: 'Comments',
+                                data: commentairesData,
+                                borderColor: '#10b981',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3,
+                                pointHoverRadius: 5,
+                                pointBorderColor: '#10b981',
+                                pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
+                                pointBorderWidth: 2,
+                                pointHoverBorderWidth: 2
+                            },
+                            {
+                                label: 'Subscribers',
+                                data: newslettersData,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 3,
+                                pointHoverRadius: 5,
+                                pointBorderColor: '#f59e0b',
+                                pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
+                                pointBorderWidth: 2,
+                                pointHoverBorderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'end',
+                                labels: {
+                                    color: textColor,
+                                    font: { family: "'Inter', sans-serif", size: 11, weight: 500 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 6,
+                                    boxHeight: 6,
+                                    padding: 15
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                                titleColor: textColor,
+                                bodyColor: textColor,
+                                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { family: "'Inter', sans-serif", size: 12, weight: 600 },
+                                bodyFont: { family: "'Inter', sans-serif", size: 11, weight: 400 },
+                                displayColors: true,
+                                boxPadding: 6,
+                                intersect: false,
+                                mode: 'index',
+                                callbacks: {
+                                    title: function(context) {
+                                        return context[0].label;
+                                    },
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y + ' new';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { 
+                                    color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)', 
+                                    drawBorder: false,
+                                    lineWidth: 1
+                                },
+                                ticks: { 
+                                    color: isDark ? '#9ca3af' : '#6b7280', 
+                                    font: { size: 10, weight: 400 },
+                                    padding: 8,
+                                    precision: 0
+                                },
+                                border: { display: false }
+                            },
+                            x: {
+                                grid: { display: false, drawBorder: false },
+                                ticks: { 
+                                    color: isDark ? '#9ca3af' : '#6b7280', 
+                                    font: { size: 10, weight: 500 },
+                                    padding: 8
+                                },
+                                border: { display: false }
+                            }
+                        },
+                        layout: {
+                            padding: { top: 10, right: 10, bottom: 10, left: 10 }
                         }
                     }
                 });

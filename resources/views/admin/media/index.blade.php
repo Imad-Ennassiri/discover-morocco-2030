@@ -4,10 +4,7 @@
     <div x-data="{ 
         showUploadModal: false, 
         uploadType: 'App\\Models\\City', 
-        selectedModelId: '',
-        showLightbox: false,
-        lightboxSrc: '',
-        lightboxType: 'image'
+        selectedModelId: ''
     }">
         
         <!-- Header & Actions -->
@@ -54,12 +51,36 @@
             </form>
         </div>
 
+        <!-- Gallery Container -->
         <div id="gallery-container">
             @include('admin.media.partials.gallery')
         </div>
 
+        <!-- Pure Vanilla JS Lightbox (No Alpine) -->
+        <div id="vanilla-lightbox" class="fixed inset-0 z-[100] hidden" style="backdrop-filter: blur(5px);">
+            <!-- Backdrop -->
+            <div class="absolute inset-0 bg-black/95 transition-opacity duration-300" id="lightbox-backdrop"></div>
+            
+            <!-- Close Button -->
+            <button id="lightbox-close" class="absolute top-4 right-4 z-[110] p-2 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 rounded-full transition-all duration-200">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Content -->
+            <div class="relative z-[105] h-full w-full flex items-center justify-center p-4">
+                <img id="lightbox-img" src="" class="hidden max-h-[90vh] max-w-full rounded-lg shadow-2xl object-contain animate-scale-in">
+                <video id="lightbox-video" controls class="hidden max-h-[90vh] max-w-full rounded-lg shadow-2xl animate-scale-in">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Filter Logic
                 const cityFilter = document.getElementById('cityFilter');
                 const destinationFilter = document.getElementById('destinationFilter');
                 const clearFiltersBtn = document.getElementById('clearFilters');
@@ -68,61 +89,97 @@
                 const fetchResults = () => {
                     const cityId = cityFilter.value;
                     const destinationId = destinationFilter.value;
-
                     const url = new URL("{{ route('admin.media.index') }}");
+                    
                     if (cityId) url.searchParams.set('city_id', cityId);
                     if (destinationId) url.searchParams.set('destination_id', destinationId);
 
-                    // Show/Hide Clear Button
                     if (cityId || destinationId) {
                         clearFiltersBtn.classList.remove('hidden');
                     } else {
                         clearFiltersBtn.classList.add('hidden');
                     }
 
-                    fetch(url, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
+                    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                     .then(response => response.text())
                     .then(html => {
                         galleryContainer.innerHTML = html;
+                        // Re-attach listeners isn't needed due to delegation, 
+                        // but good to know content is fresh.
                     })
                     .catch(error => console.error('Error:', error));
                 };
 
                 cityFilter.addEventListener('change', fetchResults);
                 destinationFilter.addEventListener('change', fetchResults);
-
                 clearFiltersBtn.addEventListener('click', function() {
                     cityFilter.value = "";
                     destinationFilter.value = "";
                     fetchResults();
                 });
 
-                // Event delegation for Lightbox (Dynamic content)
-                galleryContainer.addEventListener('click', function(e) {
+                // --- Fancy Lightbox Logic ---
+                const lightbox = document.getElementById('vanilla-lightbox');
+                const lightboxImg = document.getElementById('lightbox-img');
+                const lightboxVideo = document.getElementById('lightbox-video');
+                const closeBtn = document.getElementById('lightbox-close');
+                const backdrop = document.getElementById('lightbox-backdrop');
+
+                function openLightbox(src, type) {
+                    console.log('Opening lightbox via Vanilla JS:', src, type);
+                    
+                    // Reset
+                    lightboxImg.classList.add('hidden');
+                    lightboxVideo.classList.add('hidden');
+                    lightboxVideo.pause();
+                    lightboxVideo.src = ""; // Clear previous source
+
+                    if (type === 'image') {
+                        lightboxImg.src = src;
+                        lightboxImg.classList.remove('hidden');
+                    } else if (type === 'video') {
+                        lightboxVideo.src = src;
+                        lightboxVideo.classList.remove('hidden');
+                        lightboxVideo.play().catch(e => console.log('Autoplay prevented:', e));
+                    }
+
+                    lightbox.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden'; // Lock scroll
+                }
+
+                function closeLightbox() {
+                    lightbox.classList.add('hidden');
+                    lightboxVideo.pause();
+                    lightboxVideo.src = ""; 
+                    document.body.style.overflow = ''; // Unlock scroll
+                }
+
+                closeBtn.addEventListener('click', closeLightbox);
+                backdrop.addEventListener('click', closeLightbox);
+                
+                // Escape key support
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) {
+                        closeLightbox();
+                    }
+                });
+
+                // Global Event Delegation for Dynamic Content
+                document.body.addEventListener('click', function(e) {
+                    // Find the trigger button
                     const btn = e.target.closest('.lightbox-trigger');
                     if (btn) {
-                        try {
-                            const src = btn.dataset.src;
-                            const type = btn.dataset.type;
-                            const alpineEl = galleryContainer.closest('[x-data]');
-                            if (alpineEl && alpineEl.__x) {
-                                alpineEl.__x.$data.lightboxSrc = src;
-                                alpineEl.__x.$data.lightboxType = type;
-                                alpineEl.__x.$data.showLightbox = true;
-                            }
-                        } catch (e) {
-                            console.error('Error handling lightbox', e);
-                        }
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const src = btn.getAttribute('data-src');
+                        const type = btn.getAttribute('data-type');
+                        if(src) openLightbox(src, type);
                     }
                 });
             });
         </script>
 
-        <!-- Upload Modal -->
+        <!-- Upload Modal (Alpine) -->
         <div x-show="showUploadModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="showUploadModal = false">
@@ -205,34 +262,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- Lightbox Modal -->
-        <div x-show="showLightbox" class="fixed inset-0 z-[60] overflow-y-auto" x-cloak>
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="showLightbox = false">
-                    <div class="absolute inset-0 bg-black opacity-90"></div>
-                </div>
-
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-                <div class="inline-block align-middle bg-transparent rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-5xl w-full relative">
-                    <button @click="showLightbox = false" class="absolute top-0 right-0 -mt-12 -mr-12 p-4 text-white hover:text-gray-300 focus:outline-none">
-                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                    
-                    <div class="flex justify-center items-center">
-                        <template x-if="lightboxType === 'image'">
-                            <img :src="lightboxSrc" class="max-h-[85vh] max-w-full rounded-lg shadow-2xl">
-                        </template>
-                        <template x-if="lightboxType === 'video'">
-                            <video :src="lightboxSrc" controls autoplay class="max-h-[85vh] max-w-full rounded-lg shadow-2xl"></video>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 @endsection
