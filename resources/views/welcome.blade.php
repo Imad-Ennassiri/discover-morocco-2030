@@ -129,5 +129,117 @@
                 </div>
             </div>
         </div>
+    <!-- ========================================== -->
+    <!--          PREMIUM CUSTOM CURSOR             -->
+    <!-- ========================================== -->
+
+    <!-- ========================================== -->
+    <!--       SNAKE TRAIL CURSOR (3 CIRCLES)       -->
+    <!-- ========================================== -->
+
+    <!-- The Snake Segments -->
+    <!-- 1. Head (Big) -->
+    <div class="cursor-dot fixed top-0 left-0 w-8 h-8 bg-red-600/20 border border-red-500 rounded-full pointer-events-none z-[2147483647] transform -translate-x-1/2 -translate-y-1/2 hidden sm:block will-change-transform backdrop-blur-sm"></div>
+    
+    <!-- 2. Body (Medium) -->
+    <div class="cursor-dot fixed top-0 left-0 w-5 h-5 bg-red-600/40 rounded-full pointer-events-none z-[2147483647] transform -translate-x-1/2 -translate-y-1/2 hidden sm:block will-change-transform backdrop-blur-sm"></div>
+    
+    <!-- 3. Tail (Small) -->
+    <div class="cursor-dot fixed top-0 left-0 w-2 h-2 bg-red-600 rounded-full pointer-events-none z-[2147483647] transform -translate-x-1/2 -translate-y-1/2 hidden sm:block will-change-transform"></div>
+
+    <style>
+        /* Hide Default Cursor */
+        @media (min-width: 640px) {
+            body, a, button, input, textarea, select {
+                cursor: none !important;
+            }
+        }
+        
+        /* Hover Interaction */
+        body.is-hovering .cursor-dot:nth-child(1) {
+            background-color: rgba(220, 38, 38, 0.1);
+            transform: translate(-50%, -50%) scale(1.5);
+            border-color: rgba(220, 38, 38, 0.8);
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth < 640) return;
+
+            const dots = Array.from(document.querySelectorAll('.cursor-dot'));
+            
+            // State for each dot
+            let mouseX = 0, mouseY = 0;
+            const positions = dots.map(() => ({ x: 0, y: 0 }));
+            
+            // Speeds (0.3 = fast head, 0.1 = slow tail)
+            const speeds = [0.25, 0.2, 0.15]; 
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function animate() {
+                let targetX = mouseX;
+                let targetY = mouseY;
+
+                dots.forEach((dot, index) => {
+                    // Current dot position
+                    let pos = positions[index];
+                    
+                    // Move towards target (Lerp)
+                    pos.x += (targetX - pos.x) * speeds[index];
+                    pos.y += (targetY - pos.y) * speeds[index];
+                    
+                    // Apply
+                    dot.style.left = `${pos.x}px`;
+                    dot.style.top = `${pos.y}px`;
+
+                    // The next dot follows THIS dot
+                    targetX = pos.x;
+                    targetY = pos.y;
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Interactions
+            const selectors = 'a, button, input, textarea, select, [role="button"]';
+            document.querySelectorAll(selectors).forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'));
+            });
+            
+            document.addEventListener('mousedown', () => {
+                dots.forEach(d => d.style.transform = "translate(-50%, -50%) scale(0.8)");
+            });
+            document.addEventListener('mouseup', () => {
+                dots.forEach(d => d.style.transform = "translate(-50%, -50%) scale(1)");
+            });
+        });
+    </script>
+    
+    <!-- OPTION B: CSS-ONLY IMAGE CURSOR (COMMENTED OUT) -->
+    <!-- To use this version: 
+         1. Remove the JS Script above
+         2. Remove the cursor divs
+         3. Uncomment the style block below 
+    -->
+    <!--
+    <style>
+        :root {
+            /* Custom Diamond SVG Cursor */
+            cursor: url('data:image/svg+xml;utf8,%3Csvg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M16 2L2 16L16 30L30 16L16 2Z" fill="black" stroke="white" stroke-width="2" fill-opacity="0.8"/%3E%3Ccircle cx="16" cy="16" r="4" fill="%23ef4444"/%3E%3C/svg%3E') 16 16, auto;
+        }
+        
+        /* Pointer State */
+        a, button, [role="button"] {
+             cursor: url('data:image/svg+xml;utf8,%3Csvg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M16 2L2 16L16 30L30 16L16 2Z" fill="%23ef4444" stroke="white" stroke-width="2" fill-opacity="0.9"/%3E%3C/svg%3E') 16 16, pointer;
+        }
+    </style>
+    -->
     </body>
 </html>

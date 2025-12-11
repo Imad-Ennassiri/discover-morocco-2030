@@ -690,5 +690,101 @@
             return false;
         }
     </script>
+    <!-- ========================================== -->
+    <!--       SNAKE TRAIL CURSOR (3 CIRCLES)       -->
+    <!-- ========================================== -->
+
+    <!-- The Snake Segments -->
+    <!-- 1. Head (Big) -->
+    <div class="cursor-dot fixed top-0 left-0 w-8 h-8 bg-red-600 rounded-full pointer-events-none z-[2147483647] transform -translate-x-1/2 -translate-y-1/2 hidden sm:block will-change-[transform,left,top] shadow-sm"></div>
+    
+    <!-- 2. Body (Medium) -->
+    <div class="cursor-dot fixed top-0 left-0 w-5 h-5 bg-red-500/80 rounded-full pointer-events-none z-[2147483647] transform -translate-x-1/2 -translate-y-1/2 hidden sm:block will-change-[transform,left,top]"></div>
+    
+    <!-- 3. Tail (Small) -->
+    <div class="cursor-dot fixed top-0 left-0 w-3 h-3 bg-red-400/60 rounded-full pointer-events-none z-[2147483647] transform -translate-x-1/2 -translate-y-1/2 hidden sm:block will-change-[transform,left,top]"></div>
+
+    <style>
+        /* Hide Default Cursor Globally */
+        @media (min-width: 640px) {
+            body, a, button, input, textarea, select, label, .btn, .btn-primary, .btn-secondary, [role="button"], .cursor-pointer {
+                cursor: none !important;
+            }
+            *:hover { cursor: none !important; }
+        }
+
+        /* Hover Interaction */
+        body.is-hovering .cursor-dot:nth-child(1) {
+            transform: translate(-50%, -50%) scale(1.3);
+            background-color: #ef4444; /* Bright Red */
+            mix-blend-mode: normal;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth < 640) return;
+
+            const dots = Array.from(document.querySelectorAll('.cursor-dot'));
+            
+            // Start centered to avoid top-left glitch
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            
+            const positions = dots.map(() => ({ x: mouseX, y: mouseY }));
+            
+            // Speeds (Head fast, Tail slow)
+            const speeds = [0.4, 0.25, 0.15]; 
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function animate() {
+                let targetX = mouseX;
+                let targetY = mouseY;
+
+                dots.forEach((dot, index) => {
+                    let pos = positions[index];
+                    
+                    // Lerp towards target
+                    pos.x += (targetX - pos.x) * speeds[index];
+                    pos.y += (targetY - pos.y) * speeds[index];
+                    
+                    dot.style.left = `${pos.x}px`;
+                    dot.style.top = `${pos.y}px`;
+
+                    // Next dot follows this one
+                    targetX = pos.x;
+                    targetY = pos.y;
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Interactions
+            const selectors = 'a, button, input, textarea, select, [role="button"], .btn, .btn-primary, .cursor-pointer, .hover-trigger, label, tr';
+            
+            function attachListeners() {
+                document.querySelectorAll(selectors).forEach(el => {
+                    if(el.dataset.cursorAttached) return;
+                    el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'));
+                    el.dataset.cursorAttached = "true";
+                });
+            }
+            attachListeners();
+            new MutationObserver(() => attachListeners()).observe(document.body, { childList: true, subtree: true });
+
+            document.addEventListener('mousedown', () => {
+                dots.forEach(d => d.style.transform = "translate(-50%, -50%) scale(0.8)");
+            });
+            document.addEventListener('mouseup', () => {
+                dots.forEach(d => d.style.transform = "translate(-50%, -50%) scale(1)");
+            });
+        });
+    </script>
 </body>
 </html>
