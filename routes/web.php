@@ -15,9 +15,33 @@ use App\Http\Controllers\Admin\DashboardController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $comments = \App\Models\Commentaire::latest()->take(7)->get();
+    return view('home', compact('comments'));
 });
 
+Route::get('/contact', function () {
+    return view('contact');
+});
+
+Route::get('/faqs', function () {
+    return view('faqs');
+});
+
+Route::get('/volunteer', function () {
+    return view('volunteer');
+});
+
+Route::get('/about', function () {
+    return view('about');
+});
+
+// Public Form Routes
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
+Route::post('/volunteer', [App\Http\Controllers\VolunteerController::class, 'store'])->name('volunteer.store');
+Route::post('/newsletter', [App\Http\Controllers\NewsletterController::class, 'store'])->name('newsletter.store');
+Route::post('/comments', [App\Http\Controllers\CommentController::class, 'store'])->name('comments.store');
+
+// Admin routes
 Route::prefix('admin_morocco_2030')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     

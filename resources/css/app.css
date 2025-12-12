@@ -1,3 +1,185 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* --- Custom Animations --- */
+
+/* Smooth Fade Up */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Cinematic Ken Burns (Slower, smoother) */
+@keyframes kenburns-slow {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.15);
+    }
+}
+
+.animate-kenburns {
+    animation: kenburns-slow 15s ease-out forwards;
+}
+
+/* Text Reveal (Slide Up Mask) - SHARPER */
+.slide-text-enter {
+    opacity: 0;
+    transform: translateY(120%);
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.slide-text-enter.visible {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* --- NEW: MAXIMALIST ANIMATIONS --- */
+
+/* Infinite Marquee */
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+/* Floating Elements (Gentle Bobbing) */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float 6s ease-in-out 3s infinite;
+}
+
+/* Gradient Flow (Backgrounds) */
+@keyframes gradient-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-flow 8s ease infinite;
+}
+
+/* --- Utilities --- */
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Glassmorphism */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Visit Saudi Progress Bar */
+.hero-indicator .slide-progress {
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.hero-indicator.active .slide-progress {
+    width: 100%;
+    transition: width 5s linear;
+}
+
+/* Color Switcher Themes */
+body.theme-blue selection {
+    background: #2563eb;
+    color: white;
+}
+
+body.theme-red selection {
+    background: #dc2626;
+    color: white;
+}
+
+body.theme-gold selection {
+    background: #d97706;
+    color: white;
+}
+
+/* --- MOROCCAN CUSTOM SCROLLBAR --- */
+::-webkit-scrollbar {
+    width: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: #fbf8f3;
+    /* Light Cream Stone */
+    border-left: 1px solid #e7e5e4;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #C8102E, #9d0b67);
+    /* Moroccan Red/Purple Gradient */
+    border-radius: 7px;
+    border: 3px solid #fbf8f3;
+    /* Creates padding effect */
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #C8102E, #d4af37);
+    /* Red to Gold on Hover */
+    border: 3px solid #fbf8f3;
+}
