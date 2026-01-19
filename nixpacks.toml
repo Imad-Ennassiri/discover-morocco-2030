@@ -1,7 +1,4 @@
 # Nixpacks configuration for Laravel + Vite
-[phases.setup]
-nixPkgs = ["php", "nodejs", "git"]
-
 [phases.build]
 cmds = ["composer install --no-interaction --optimize-autoloader --no-dev", "npm install", "npm run build"]
 
