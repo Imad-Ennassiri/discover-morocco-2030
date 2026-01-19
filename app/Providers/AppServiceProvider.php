@@ -59,5 +59,8 @@ class AppServiceProvider extends ServiceProvider
         Contact::observe(\App\Observers\ActivityObserver::class);
         \App\Models\Commentaire::observe(\App\Observers\ActivityObserver::class);
         \App\Models\Newsletter::observe(\App\Observers\ActivityObserver::class);
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
