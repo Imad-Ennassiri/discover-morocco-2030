@@ -1,6 +1,7 @@
 [phases.setup]
 nixPkgs = ["php82", "nodejs", "git"]
 
+# Nixpacks configuration for Laravel - Final Sync
 [phases.build]
 cmds = ["composer install --no-interaction --optimize-autoloader --no-dev", "npm install", "npm run build"]
 
