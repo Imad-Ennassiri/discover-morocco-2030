@@ -14,7 +14,11 @@ use App\Http\Controllers\Admin\DashboardController;
 |
 */
 
+
+
 Route::get('/', function () {
+
+
     $comments = \App\Models\Commentaire::latest()->take(7)->get();
     return view('home', compact('comments'));
 })->name('home');

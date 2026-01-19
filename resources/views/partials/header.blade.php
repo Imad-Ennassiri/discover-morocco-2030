@@ -27,7 +27,7 @@
         </a>
 
         <!-- Discover Morocco -->
-        <div class="group h-full flex items-center pointer-events-auto" onmouseenter="openDiscoverOverlay()">
+        <div class="group h-full flex items-center pointer-events-auto" onmouseenter="openDiscoverOverlay()" onmouseleave="closeDiscoverOverlay()">
             <a href="/cities" class="group-hover:text-[#C8102E] transition-colors duration-300 h-full flex items-center {{ request()->is('cities*') ? 'text-[#C8102E]' : '' }}">
                 <span class="relative">
                     Discover Morocco

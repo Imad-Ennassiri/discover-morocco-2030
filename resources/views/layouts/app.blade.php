@@ -480,6 +480,8 @@
 
     <!-- MEGA MENU OVERLAY (Hover Triggered, Global Position) -->
     <div id="discover-overlay"
+        onmouseenter="openDiscoverOverlay()"
+        onmouseleave="closeDiscoverOverlay()"
         class="fixed top-0 left-0 w-full h-full bg-white z-[90] hidden flex-col transition-opacity duration-300 opacity-0 pt-[100px]"
         style="padding-top: 100px;">
 
@@ -488,15 +490,7 @@
              style="background-image: url('{{ asset('assets/images/zellige_pattern.png') }}'); background-size: 300px;">
         </div>
 
-        <!-- Close Button -->
-        <button onclick="closeDiscoverOverlay()"
-            class="absolute top-[120px] right-10 z-50 group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#006233] hover:text-[#C8102E] transition-colors">
-            <span>Close</span>
-            <div
-                class="w-8 h-8 border border-[#006233] rounded-full flex items-center justify-center group-hover:border-[#C8102E] transition-colors bg-white">
-                <i class="fas fa-times"></i>
-            </div>
-        </button>
+
 
         <!-- Main Content Grid -->
         <div class="flex flex-col lg:flex-row h-full relative z-10">
@@ -601,7 +595,7 @@
                                     
                                     @php
                                         $rImg = $destination->image ?? ($destination->destinationImages->first() ? $destination->destinationImages->first()->image : null);
-                                        $imgPath = $rImg ? (Str::startsWith($rImg, 'http') ? $rImg : (Str::startsWith($rImg, 'images/') ? asset($rImg) : asset('storage/' . $rImg))) : asset('assets/images/morocco_hero.png');
+                                        $imgPath = $rImg ? (Str::startsWith($rImg, 'http') ? $rImg : (Str::startsWith($rImg, 'images/') ? asset($rImg) : asset('storage/' . $rImg))) : asset('assets/images/morocco_hero_real.png');
                                     @endphp
 
                                     <img src="{{ $imgPath }}"
@@ -1566,9 +1560,17 @@
     <script>
         // DISCOVER OVERLAY LOGIC
         const discoverOverlay = document.getElementById('discover-overlay');
+        let discoverCloseTimeout;
 
         function openDiscoverOverlay() {
             if (!discoverOverlay) return;
+            
+            // Clear any pending close timeout
+            if (discoverCloseTimeout) {
+                clearTimeout(discoverCloseTimeout);
+                discoverCloseTimeout = null;
+            }
+
             discoverOverlay.classList.remove('hidden');
             // Force reflow
             void discoverOverlay.offsetWidth;
@@ -1587,13 +1589,18 @@
 
         function closeDiscoverOverlay() {
             if (!discoverOverlay) return;
+            
+            // If already pending close, don't start another one
+            if (discoverCloseTimeout) return;
+
             discoverOverlay.classList.remove('opacity-100');
             discoverOverlay.classList.add('opacity-0');
 
-            setTimeout(() => {
+            discoverCloseTimeout = setTimeout(() => {
                 discoverOverlay.classList.add('hidden');
                 discoverOverlay.classList.remove('flex');
                 document.body.style.overflow = '';
+                discoverCloseTimeout = null;
             }, 300);
         }
     </script>

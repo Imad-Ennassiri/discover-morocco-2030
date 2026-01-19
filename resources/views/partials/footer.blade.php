@@ -3,10 +3,10 @@
     <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-stone-200 to-transparent"></div>
 
     <div class="container mx-auto px-6 md:px-12 pt-16 pb-2 md:pt-24 md:pb-2">
-        <div class="grid grid-cols-2 md:grid-cols-12 gap-y-10 gap-x-6 md:gap-12 lg:gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-12 gap-y-10 gap-x-6 md:gap-8 lg:gap-8">
             
             <!-- Brand Column -->
-            <div class="col-span-2 md:col-span-4 flex flex-col items-start md:pr-8">
+            <div class="col-span-2 md:col-span-4 flex flex-col items-start md:pr-4">
                 <h1 class="text-4xl md:text-6xl font-black tracking-wider uppercase text-black mb-6 md:mb-8 leading-none">
                     Morocco<span class="text-[#C8102E]">.</span>
                 </h1>
@@ -45,7 +45,7 @@
             </div>
 
             <!-- Call Center -->
-            <div class="col-span-2 md:col-span-3 pt-4 md:pt-2 pl-0 md:pl-8 border-t border-stone-100 md:border-t-0 mt-4 md:mt-0">
+            <div class="col-span-2 md:col-span-3 pt-4 md:pt-2 pl-0 md:pl-4 border-t border-stone-100 md:border-t-0 mt-4 md:mt-0">
                 <h4 class="font-bold text-[10px] md:text-xs mb-6 md:mb-8 uppercase tracking-[0.15em] text-black mt-6 md:mt-0">Call Center</h4>
                 
                 <div class="flex gap-5 text-xl text-stone-900 mb-8 md:mb-10">

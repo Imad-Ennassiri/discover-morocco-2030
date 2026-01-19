@@ -94,16 +94,28 @@
                             <!-- Large Cinematic Image Frame -->
                             <div class="w-full lg:w-[55%] relative">
                                     @php
+                                        // Try to get specific gallery image for this paragraph
                                         $pImgObj = $destination->destinationImages->skip($index)->first();
-                                        $pUrl = $pImgObj ? (Str::startsWith($pImgObj->image, 'http') ? $pImgObj->image : (Str::startsWith($pImgObj->image, 'images/') ? asset($pImgObj->image) : asset('storage/' . $pImgObj->image))) : asset('assets/images/morocco_hero.png');
+                                        
+                                        // Fallback to main destination image if gallery image is missing
+                                        $rawImage = $pImgObj ? $pImgObj->image : $destination->image;
+                                        
+                                        if ($rawImage) {
+                                            $rawImage = str_replace('\\', '/', $rawImage);
+                                            $pUrl = (Str::startsWith($rawImage, 'http')) 
+                                                ? $rawImage 
+                                                : ((Str::startsWith($rawImage, 'images/')) 
+                                                    ? asset($rawImage) 
+                                                    : asset('storage/' . $rawImage));
+                                        } else {
+                                            // Final fallback if absolutely no image exists
+                                            $pUrl = asset('assets/images/morocco_hero_real.png');
+                                        }
                                     @endphp
-                                    @if($pImgObj)
-                                        <img src="{{ $pUrl }}" 
-                                             class="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-[3s] ease-out brightness-90 group-hover:brightness-105"
-                                             alt="{{ $paragraph->titre }}">
-                                    @else
-                                        <img src="{{ asset('assets/images/morocco_hero.png') }}" class="w-full h-full object-cover opacity-30 grayscale grayscale-0">
-                                    @endif
+                                    
+                                    <img src="{{ $pUrl }}" 
+                                         class="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-[3s] ease-out brightness-90 group-hover:brightness-105"
+                                         alt="{{ $paragraph->titre }}">
                                     
                                     <!-- Frame Glow -->
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
@@ -126,7 +138,41 @@
     </section>
 
     <!-- Art Gallery (Horizontal Scroll/Grid Mix) -->
-    @if($destination->destinationImages->count() > 0)
+    @php
+        $allGalleryImages = collect();
+        
+        // Source 1: destinationImages relation
+        foreach($destination->destinationImages as $di) {
+            $rawImage = $di->image;
+            if ($rawImage) {
+                 $rawImage = str_replace('\\', '/', $rawImage);
+                 $imgUrl = (Str::startsWith($rawImage, 'http')) 
+                    ? $rawImage 
+                    : ((Str::startsWith($rawImage, 'images/')) 
+                        ? asset($rawImage) 
+                        : asset('storage/' . $rawImage));
+                 $allGalleryImages->push($imgUrl);
+            }
+        }
+        
+        // Source 2: polymorphic media relation
+        foreach($destination->media as $m) {
+            if(Str::startsWith($m->file_type, 'image')) {
+                 $allGalleryImages->push(asset('storage/' . str_replace('\\', '/', $m->file_path)));
+            }
+        }
+        
+        // Source 3: name-matched galleryMedia from controller
+        if(isset($galleryMedia)) {
+            foreach($galleryMedia as $gm) {
+                 $allGalleryImages->push(asset('storage/' . str_replace('\\', '/', $gm->file_path)));
+            }
+        }
+        
+        $uniqueImages = $allGalleryImages->unique()->take(12);
+    @endphp
+
+    @if($uniqueImages->count() > 0)
         <section class="py-40 bg-white relative overflow-hidden">
             <div class="absolute inset-0 bg-[url('{{ asset('assets/images/zellige_pattern.png') }}')] opacity-[0.03] pointer-events-none"></div>
             
@@ -137,31 +183,6 @@
                         The Gallery of <br><span class="italic text-stone-400">Legacy</span>
                     </h2>
                 </div>
-                
-                @php
-                    $allGalleryImages = collect();
-                    
-                    // Source 1: destinationImages relation
-                    foreach($destination->destinationImages as $di) {
-                        $allGalleryImages->push((Str::startsWith($di->image, 'http')) ? $di->image : (Str::startsWith($di->image, 'images/') ? asset($di->image) : asset('storage/' . $di->image)));
-                    }
-                    
-                    // Source 2: polymorphic media relation
-                    foreach($destination->media as $m) {
-                        if(Str::startsWith($m->file_type, 'image')) {
-                             $allGalleryImages->push(asset('storage/' . $m->file_path));
-                        }
-                    }
-                    
-                    // Source 3: name-matched galleryMedia from controller
-                    if(isset($galleryMedia)) {
-                        foreach($galleryMedia as $gm) {
-                             $allGalleryImages->push(asset('storage/' . $gm->file_path));
-                        }
-                    }
-                    
-                    $uniqueImages = $allGalleryImages->unique()->take(12);
-                @endphp
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-20">
                     @foreach($uniqueImages as $index => $imgUrl)
@@ -207,7 +228,7 @@
                             <div class="relative overflow-hidden mb-10 bg-stone-900 aspect-[16/11] rounded-2xl group-hover:-translate-y-4 transition-all duration-700 ease-out">
                                 @php
                                     $rImg = $other->image ?? ($other->destinationImages->first() ? $other->destinationImages->first()->image : null);
-                                    $rUrl = $rImg ? (Str::startsWith($rImg, 'http') ? $rImg : (Str::startsWith($rImg, 'images/') ? asset($rImg) : asset('storage/' . $rImg))) : asset('assets/images/morocco_hero.png');
+                                    $rUrl = $rImg ? (Str::startsWith($rImg, 'http') ? $rImg : (Str::startsWith($rImg, 'images/') ? asset($rImg) : asset('storage/' . $rImg))) : asset('assets/images/morocco_hero_real.png');
                                 @endphp
                                 <img src="{{ $rUrl }}" class="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-[1.5s]">
                                 <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent opacity-60"></div>
